@@ -3,7 +3,7 @@ models.py
 
 Draccus Dataclass Definition for a ModelConfig object, with various registered subclasses for each model family and
 variant thereof. A given model variant configures the following attributes:
-    - Pretrained Visual Representation (e.g., OpenAI CLIP ViT-L/14) + Pretrained LLM Backbone (e.g., LLaMa-2 7B)
+    - Pretrained Visual Representation (e.g., OpenAI CLIP ViT-L/14) + Pretrained LLM Backbone (e.g., Llama-2 7B)
     - VLM Configuration + Parameters (e.g., MLP Projector, Image Preprocessing, etc.)
     - [Optional] Stage 1 (`align`) Optimization Hyperparameters
     - Stage 2 (`finetune`) Optimization Hyperparameters
@@ -274,7 +274,7 @@ class Exp_13B_Llama2(Exp_13B_One_Stage):
     llm_backbone_id: str = "llama2-13b-pure"
 
 
-# ~ Additional LLM Backbones :: LLaMa-2 Chat, Mistral v0.1, Mistral v0.1 Instruct, Phi-2 ~
+# ~ Additional LLM Backbones :: Llama-2 Chat, Mistral v0.1, Mistral v0.1 Instruct, Phi-2 ~
 @dataclass
 class Ext_Exp_7B_Llama2_Chat(Exp_7B_One_Stage):
     model_id: str = "llama2-chat+7b"
@@ -557,7 +557,7 @@ class ModelRegistry(Enum):
     EXP_LLAMA2_7B = Exp_7B_Llama2
     EXP_LLAMA2_13B = Exp_13B_Llama2
 
-    # ~ Additional LLM Backbone Experiments :: LLaMa-2 Chat, Mistral v0.1, Mistral v0.1 Instruct, Phi-2 ~
+    # ~ Additional LLM Backbone Experiments :: Llama-2 Chat, Mistral v0.1, Mistral v0.1 Instruct, Phi-2 ~
     EXT_EXP_LLAMA2_CHAT_7B = Ext_Exp_7B_Llama2_Chat
     EXT_EXP_LLAMA2_CHAT_13B = Ext_Exp_13B_Llama2_Chat
     EXT_EXP_LLAMA3_CHAT_8B = Ext_Exp_8B_Llama3_Chat

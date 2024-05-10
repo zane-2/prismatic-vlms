@@ -20,10 +20,10 @@ from prismatic.models.backbones.llm.prompting import (
     VicunaV15ChatPromptBuilder,
 )
 
-# Registry =>> Support LLaMa-2 Models (from HF Transformers)
+# Registry =>> Support Llama-2 Models (from HF Transformers)
 # fmt: off
 LLAMA2_MODELS = {
-    # === Pure Meta LLaMa-2 (non-instruct/chat-tuned) Models ===
+    # === Pure Meta Llama-2 (non-instruct/chat-tuned) Models ===
     "llama2-7b-pure": {
         "llm_family": "llama2", "llm_cls": LlamaForCausalLM, "hf_hub_path": "meta-llama/Llama-2-7b-hf"
     },
@@ -76,7 +76,7 @@ class LlamaLLMBackbone(HFCausalLLMBackbone):
             **LLAMA2_MODELS[llm_backbone_id],
         )
 
-        # [Special Case] LLaMa-2 PAD Token Handling --> for clarity, we add an extra token (and resize)
+        # [Special Case] Llama-2 PAD Token Handling --> for clarity, we add an extra token (and resize)
         self.tokenizer.add_special_tokens({"pad_token": "<PAD>"})
         self.llm.config.pad_token_id = self.tokenizer.pad_token_id
         self.llm.resize_token_embeddings(len(self.tokenizer), pad_to_multiple_of=64)
@@ -103,5 +103,5 @@ class LlamaLLMBackbone(HFCausalLLMBackbone):
 
     @property
     def half_precision_dtype(self) -> torch.dtype:
-        """LLaMa-2 was trained in BF16; see https://huggingface.co/docs/transformers/main/model_doc/llama2."""
+        """Llama-2 was trained in BF16; see https://huggingface.co/docs/transformers/main/model_doc/llama2."""
         return torch.bfloat16

@@ -11,7 +11,7 @@ from transformers import PreTrainedTokenizerBase
 
 from prismatic.models.backbones.llm import (
     GemmaLLMBackbone,
-    LLaMa2LLMBackbone,
+    LlamaLLMBackbone,
     LLMBackbone,
     MistralLLMBackbone,
     PhiLLMBackbone
@@ -58,20 +58,20 @@ VISION_BACKBONES = {
 
 # === Language Model Registry ===
 LLM_BACKBONES = {
-    # === LLaMa-2 Pure (Non-Chat) Backbones ===
-    "llama2-7b-pure": {"cls": LLaMa2LLMBackbone, "kwargs": {}},
-    "llama2-13b-pure": {"cls": LLaMa2LLMBackbone, "kwargs": {}},
+    # === Llama-2 Pure (Non-Chat) Backbones ===
+    "llama2-7b-pure": {"cls": LlamaLLMBackbone, "kwargs": {}},
+    "llama2-13b-pure": {"cls": LlamaLLMBackbone, "kwargs": {}},
 
-    # === LLaMa-2 Chat Backbones ===
-    "llama2-7b-chat": {"cls": LLaMa2LLMBackbone, "kwargs": {}},
-    "llama2-13b-chat": {"cls": LLaMa2LLMBackbone, "kwargs": {}},
+    # === Llama-2 Chat Backbones ===
+    "llama2-7b-chat": {"cls": LlamaLLMBackbone, "kwargs": {}},
+    "llama2-13b-chat": {"cls": LlamaLLMBackbone, "kwargs": {}},
 
     # === LLaMa-3 Backbones ===
-    "llama3-8b-instruct": {"cls": LLaMa2LLMBackbone, "kwargs": {}},
+    "llama3-8b-instruct": {"cls": LlamaLLMBackbone, "kwargs": {}},
 
     # === Vicuna-v1.5 Backbones ===
-    "vicuna-v15-7b": {"cls": LLaMa2LLMBackbone, "kwargs": {}},
-    "vicuna-v15-13b": {"cls": LLaMa2LLMBackbone, "kwargs": {}},
+    "vicuna-v15-7b": {"cls": LlamaLLMBackbone, "kwargs": {}},
+    "vicuna-v15-13b": {"cls": LlamaLLMBackbone, "kwargs": {}},
 
     # === Mistral v0.1 Backbones ===
     "mistral-v0.1-7b-pure": {"cls": MistralLLMBackbone, "kwargs": {}},

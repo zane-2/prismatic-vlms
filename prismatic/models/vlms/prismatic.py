@@ -31,7 +31,7 @@ from prismatic.util.nn_utils import FusedMLPProjector, LinearProjector, MLPProje
 overwatch = initialize_overwatch(__name__)
 
 
-# HuggingFace Default / LLaMa-2 IGNORE_INDEX (for labels)
+# HuggingFace Default / Llama-2 IGNORE_INDEX (for labels)
 IGNORE_INDEX = -100
 
 

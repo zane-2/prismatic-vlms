@@ -22,7 +22,7 @@ from transformers import CodeGenTokenizerFast, LlamaTokenizerFast, PreTrainedTok
 from prismatic.models.backbones.llm.prompting import PromptBuilder
 from prismatic.models.backbones.vision import ImageTransform
 
-# HuggingFace Default / LLaMa-2 IGNORE_INDEX (for labels)
+# HuggingFace Default / Llama-2 IGNORE_INDEX (for labels)
 IGNORE_INDEX = -100
 
 

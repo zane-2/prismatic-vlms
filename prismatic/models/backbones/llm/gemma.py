@@ -18,7 +18,7 @@ from prismatic.models.backbones.llm.prompting import (
     PurePromptBuilder,
 )
 
-# Registry =>> Support LLaMa-2 Models (from HF Transformers)
+# Registry =>> Support Llama-2 Models (from HF Transformers)
 # fmt: off
 GEMMA_MODELS = {
     # === Google Gemma Instruction-Tuned ===
@@ -60,7 +60,7 @@ class GemmaLLMBackbone(HFCausalLLMBackbone):
             **GEMMA_MODELS[llm_backbone_id],
         )
 
-        # [Special Case] LLaMa-2 PAD Token Handling --> for clarity, we add an extra token (and resize)
+        # [Special Case] Llama-2 PAD Token Handling --> for clarity, we add an extra token (and resize)
         self.tokenizer.add_special_tokens({"pad_token": "<PAD>"})
         self.llm.config.pad_token_id = self.tokenizer.pad_token_id
         self.llm.resize_token_embeddings(len(self.tokenizer), pad_to_multiple_of=64)
@@ -81,5 +81,5 @@ class GemmaLLMBackbone(HFCausalLLMBackbone):
 
     @property
     def half_precision_dtype(self) -> torch.dtype:
-        """LLaMa-2 was trained in BF16; see https://huggingface.co/docs/transformers/main/model_doc/llama2."""
+        """Llama-2 was trained in BF16; see https://huggingface.co/docs/transformers/main/model_doc/llama2."""
         return torch.bfloat16

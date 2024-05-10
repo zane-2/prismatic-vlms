@@ -61,7 +61,7 @@ torchrun --standalone --nnodes 1 --nproc-per-node 2 scripts/pretrain.py \
 ```
 
 
-## Llama3 8B IT
+## Llama3 8B Instruct
 
 ```bash
 # Run from the root of the repository
