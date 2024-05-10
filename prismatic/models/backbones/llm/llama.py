@@ -1,5 +1,5 @@
 """
-llama2.py
+llama.py
 
 Class definition for all LLMs derived from LlamaForCausalLM.
 """
@@ -13,7 +13,8 @@ from transformers.models.llama.modeling_llama import LlamaDecoderLayer
 
 from prismatic.models.backbones.llm.base_llm import HFCausalLLMBackbone
 from prismatic.models.backbones.llm.prompting import (
-    LLaMa2ChatPromptBuilder,
+    Llama2ChatPromptBuilder,
+    Llama3ChatPromptBuilder,
     PromptBuilder,
     PurePromptBuilder,
     VicunaV15ChatPromptBuilder,
@@ -41,8 +42,8 @@ LLAMA2_MODELS = {
     },
 
     # === Meta Llama-3 Chat Models ===
-    "llama3-8b-chat": {
-        "llm_family": "llama2", "llm_cls": LlamaForCausalLM, "hf_hub_path": "meta-llama/Meta-Llama-3-8B-Instruct"
+    "llama3-8b-instruct": {
+        "llm_family": "llama3", "llm_cls": LlamaForCausalLM, "hf_hub_path": "meta-llama/Meta-Llama-3-8B-Instruct"
     },
 
     # === Vicuna v1.5 Chat Models ===
@@ -57,7 +58,7 @@ LLAMA2_MODELS = {
 # fmt: on
 
 
-class LLaMa2LLMBackbone(HFCausalLLMBackbone):
+class LlamaLLMBackbone(HFCausalLLMBackbone):
     def __init__(
         self,
         llm_backbone_id: str,
@@ -86,7 +87,10 @@ class LLaMa2LLMBackbone(HFCausalLLMBackbone):
             return PurePromptBuilder
 
         elif self.identifier.startswith("llama2-") and self.identifier.endswith("-chat"):
-            return LLaMa2ChatPromptBuilder
+            return Llama2ChatPromptBuilder
+
+        elif self.identifier.startswith("llama3-") and self.identifier.endswith("-instruct"):
+            return Llama3ChatPromptBuilder
 
         elif self.identifier.startswith("vicuna"):
             return VicunaV15ChatPromptBuilder

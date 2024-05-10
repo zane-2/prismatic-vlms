@@ -1,5 +1,5 @@
 """
-llama2.py
+llama.py
 
 Class definition for all LLMs derived from LlamaForCausalLM.
 """
