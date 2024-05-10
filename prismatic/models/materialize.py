@@ -67,7 +67,7 @@ LLM_BACKBONES = {
     "llama2-13b-chat": {"cls": LLaMa2LLMBackbone, "kwargs": {}},
 
     # === LLaMa-3 Backbones ===
-    "llama3-instruct+8b": {"cls": LLaMa2LLMBackbone, "kwargs": {}},
+    "llama3-8b-instruct": {"cls": LLaMa2LLMBackbone, "kwargs": {}},
 
     # === Vicuna-v1.5 Backbones ===
     "vicuna-v15-7b": {"cls": LLaMa2LLMBackbone, "kwargs": {}},
@@ -83,8 +83,8 @@ LLM_BACKBONES = {
     "phi-3-instruct+4b": {"cls": PhiLLMBackbone, "kwargs": {}},
 
     # === Gemma-2 Instruct Backbones ===
-    "gemma-instruct+2b": {"cls": GemmaLLMBackbone, "kwargs": {}},
-    "gemma-instruct+8b": {"cls": GemmaLLMBackbone, "kwargs": {}},
+    "gemma-2b-instruct": {"cls": GemmaLLMBackbone, "kwargs": {}},
+    "gemma-8b-instruct": {"cls": GemmaLLMBackbone, "kwargs": {}},
 }
 
 # fmt: on

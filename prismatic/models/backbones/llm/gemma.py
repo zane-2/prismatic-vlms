@@ -9,7 +9,7 @@ from typing import Optional, Type
 import torch
 from torch import nn as nn
 from transformers import GemmaForCausalLM
-from transformers.models.llama.modeling_llama import LlamaDecoderLayer
+from transformers.models.gemma.modeling_gemma import GemmaDecoderLayer
 
 from prismatic.models.backbones.llm.base_llm import HFCausalLLMBackbone
 from prismatic.models.backbones.llm.prompting import (
@@ -23,20 +23,20 @@ from prismatic.models.backbones.llm.prompting import (
 GEMMA_MODELS = {
     # === Google Gemma Instruction-Tuned ===
     "gemma-2b": {
-        "llm_family": "llama2", "llm_cls": GemmaForCausalLM, "hf_hub_path": "google/gemma-2b"
+        "llm_family": "gemma", "llm_cls": GemmaForCausalLM, "hf_hub_path": "google/gemma-2b"
     },
 
     "gemma-7b": {
-        "llm_family": "llama2", "llm_cls": GemmaForCausalLM, "hf_hub_path": "google/gemma-7b"
+        "llm_family": "gemma", "llm_cls": GemmaForCausalLM, "hf_hub_path": "google/gemma-7b"
     },
 
     # === Google Gemma Instruction-Tuned ===
     "gemma-2b-instruct": {
-        "llm_family": "llama2", "llm_cls": GemmaForCausalLM, "hf_hub_path": "google/gemma-2b-it"
+        "llm_family": "gemma", "llm_cls": GemmaForCausalLM, "hf_hub_path": "google/gemma-2b-it"
     },
 
     "gemma-8b-instruct": {
-        "llm_family": "llama2", "llm_cls": GemmaForCausalLM, "hf_hub_path": "google/gemma-7b-it"
+        "llm_family": "gemma", "llm_cls": GemmaForCausalLM, "hf_hub_path": "google/gemma-7b-it"
     },
 }
 # fmt: on
@@ -77,7 +77,7 @@ class GemmaLLMBackbone(HFCausalLLMBackbone):
 
     @property
     def transformer_layer_cls(self) -> Type[nn.Module]:
-        return LlamaDecoderLayer
+        return GemmaDecoderLayer
 
     @property
     def half_precision_dtype(self) -> torch.dtype:

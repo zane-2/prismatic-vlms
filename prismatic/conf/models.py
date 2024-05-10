@@ -250,14 +250,16 @@ class Exp_7B_DINOSigLIP_ViT_L_p14_384px_Resize_Naive(Exp_7B_One_Stage):
 
 @dataclass
 class Ext_Exp_2B_Gemma_Instruct(Exp_7B_One_Stage):
-    model_id: str = "gemma-instruct+2b"
+    model_id: str = "gemma-instruct+2b+clip"
     llm_backbone_id: str = "gemma-2b-instruct"
+    vision_backbone_id: str = "clip-vit-l-336px"
 
 
 @dataclass
 class Ext_Exp_8B_Gemma_Instruct(Exp_7B_One_Stage):
-    model_id: str = "gemma-instruct+8b"
+    model_id: str = "gemma-instruct+8b+clip"
     llm_backbone_id: str = "gemma-8b-instruct"
+    vision_backbone_id: str = "clip-vit-l-336px"
 
 
 @dataclass
