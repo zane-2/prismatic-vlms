@@ -23,7 +23,7 @@ torchrun --standalone --nnodes 1 --nproc-per-node 2 scripts/pretrain.py \
 
 ## Gemma 2B IT
 
-Status: Broken
+Status: `ValueError: Tokenizer of type <class 'transformers.models.gemma.tokenization_gemma_fast.GemmaTokenizerFast'> is not explicitly handled!`
 
 ```bash
 # Run from the root of the repository
@@ -43,7 +43,7 @@ torchrun --standalone --nnodes 1 --nproc-per-node 2 scripts/pretrain.py \
 
 ## Gemma 8B IT
 
-Status: Broken
+Status: `ValueError: Tokenizer of type <class 'transformers.models.gemma.tokenization_gemma_fast.GemmaTokenizerFast'> is not explicitly handled!`
 
 ```bash
 # Run from the root of the repository
@@ -62,6 +62,8 @@ torchrun --standalone --nnodes 1 --nproc-per-node 2 scripts/pretrain.py \
 
 
 ## Llama3 8B Instruct
+
+Status: `ValueError: Tokenizer of type <class 'transformers.tokenization_utils_fast.PreTrainedTokenizerFast'> is not explicitly handled!`
 
 ```bash
 # Run from the root of the repository
