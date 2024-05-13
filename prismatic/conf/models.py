@@ -248,6 +248,7 @@ class Exp_7B_DINOSigLIP_ViT_L_p14_384px_Resize_Naive(Exp_7B_One_Stage):
 
 # Section 4.3A :: 📝 --> Base vs. Instruct-Tuned (Chat) LLMs
 
+
 @dataclass
 class Ext_Exp_2B_Gemma_Instruct(Exp_7B_One_Stage):
     model_id: str = "gemma-instruct+2b+clip"
@@ -306,9 +307,24 @@ class Ext_Exp_7B_Mistral_Instruct_V1(Exp_7B_One_Stage):
 
 
 @dataclass
-class Ext_Exp_7B_Mistral_Instruct_V2(Exp_7B_One_Stage):
+class Ext_Exp_7B_Mistral_Instruct_V2_CLIP(Exp_7B_One_Stage):
     model_id: str = "mistral-instruct-v0.2+7b"
     llm_backbone_id: str = "mistral-v0.2-7b-instruct"
+    vision_backbone_id: str = "clip-vit-l-336px"
+
+
+@dataclass
+class Ext_Exp_7B_Mistral_Instruct_V2_SigLIP(Exp_7B_One_Stage):
+    model_id: str = "mistral-instruct-v0.2+7b"
+    llm_backbone_id: str = "mistral-v0.2-7b-instruct"
+    vision_backbone_id: str = "siglip-vit-so400m-384px"
+
+
+@dataclass
+class Ext_Exp_7B_Mistral_Instruct_V2_DINOv2SigLIP(Exp_7B_One_Stage):
+    model_id: str = "mistral-instruct-v0.2+7b"
+    llm_backbone_id: str = "mistral-v0.2-7b-instruct"
+    vision_backbone_id: str = "dinosiglip-vit-so-384px"
 
 
 @dataclass
@@ -565,7 +581,9 @@ class ModelRegistry(Enum):
     EXT_EXP_GEMMA_INSTRUCT_7B = Ext_Exp_8B_Gemma_Instruct
     EXT_EXP_MISTRAL_V1_7B = Ext_Exp_7B_Mistral_V1
     EXT_EXP_MISTRAL_INSTRUCT_V1_7B = Ext_Exp_7B_Mistral_Instruct_V1
-    EXT_EXP_MISTRAL_INSTRUCT_V2_7B = Ext_Exp_7B_Mistral_Instruct_V2
+    EXT_EXP_MISTRAL_INSTRUCT_V2_7B_CLIP = Ext_Exp_7B_Mistral_Instruct_V2_CLIP
+    EXT_EXP_MISTRAL_INSTRUCT_V2_7B_SigLIP = Ext_Exp_7B_Mistral_Instruct_V2_DINOv2SigLIP
+    EXT_EXP_MISTRAL_INSTRUCT_V2_7B_DINOv2SigLIP = Ext_Exp_7B_Mistral_Instruct_V2_SigLIP
     EXT_EXP_PHI_2_3B = Ext_Exp_3B_Phi_2
     EXT_EXP_PHI_2_4B = Ext_Exp_4B_Phi_3_Instruct
 
