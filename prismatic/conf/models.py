@@ -257,10 +257,22 @@ class Ext_Exp_2B_Gemma_Instruct(Exp_7B_One_Stage):
 
 
 @dataclass
-class Ext_Exp_8B_Gemma_Instruct(Exp_7B_One_Stage):
+class Ext_Exp_8B_Gemma_Instruct_CLIP(Exp_7B_One_Stage):
     model_id: str = "gemma-instruct+8b+clip"
     llm_backbone_id: str = "gemma-8b-instruct"
     vision_backbone_id: str = "clip-vit-l-336px"
+
+
+class Ext_Exp_8B_Gemma_Instruct_SigLIP(Exp_7B_One_Stage):
+    model_id: str = "gemma-instruct+8b+clip"
+    llm_backbone_id: str = "gemma-8b-instruct"
+    vision_backbone_id: str = "siglip-vit-so400m-384px"
+
+
+class Ext_Exp_8B_Gemma_Instruct_DINOv2SigLIP(Exp_7B_One_Stage):
+    model_id: str = "gemma-instruct+8b+clip"
+    llm_backbone_id: str = "gemma-8b-instruct"
+    vision_backbone_id: str = "dinosiglip-vit-so-384px"
 
 
 @dataclass
@@ -578,7 +590,9 @@ class ModelRegistry(Enum):
     EXT_EXP_LLAMA2_CHAT_13B = Ext_Exp_13B_Llama2_Chat
     EXT_EXP_LLAMA3_CHAT_8B = Ext_Exp_8B_Llama3_Chat
     EXT_EXP_GEMMA_INSTRUCT_2B = Ext_Exp_2B_Gemma_Instruct
-    EXT_EXP_GEMMA_INSTRUCT_7B = Ext_Exp_8B_Gemma_Instruct
+    EXT_EXP_GEMMA_INSTRUCT_8B_CLIP = Ext_Exp_8B_Gemma_Instruct_CLIP
+    EXT_EXP_GEMMA_INSTRUCT_8B_DINOv2SigLIP = Ext_Exp_8B_Gemma_Instruct_DINOv2SigLIP
+    EXT_EXP_GEMMA_INSTRUCT_8B_SIGLIP = Ext_Exp_8B_Gemma_Instruct_SigLIP
     EXT_EXP_MISTRAL_V1_7B = Ext_Exp_7B_Mistral_V1
     EXT_EXP_MISTRAL_INSTRUCT_V1_7B = Ext_Exp_7B_Mistral_Instruct_V1
     EXT_EXP_MISTRAL_INSTRUCT_V2_7B_CLIP = Ext_Exp_7B_Mistral_Instruct_V2_CLIP
