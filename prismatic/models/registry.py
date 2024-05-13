@@ -710,6 +710,19 @@ MODEL_REGISTRY = {
             "train_epochs": 1,
         }
     },
+    "llama2-chat+7b+dinosiglip": {
+        "model_id": "llama2-chat+7b+dinosiglip",
+        "names": ["Llama-2 Chat 7B"],
+        "description": {
+            "name": "Llama-2 Chat 7B",
+            "optimization_procedure": "single-stage",
+            "visual_representation": "DINOv2 ViT-L/14 + SigLIP ViT-SO/14 @ 384px",
+            "image_processing": "Letterbox",
+            "language_model": "Llama-2 Chat 7B",
+            "datasets": ["LLaVa v1.5 Instruct"],
+            "train_epochs": 1,
+        }
+    },
     "llama2-chat+7b+siglip": {
         "model_id": "llama2-chat+7b+siglip",
         "names": ["Llama-2 Chat 7B"],
@@ -717,19 +730,6 @@ MODEL_REGISTRY = {
             "name": "Llama-2 Chat 7B",
             "optimization_procedure": "single-stage",
             "visual_representation": "SigLIP ViT-SO/14 @ 384px",
-            "image_processing": "Letterbox",
-            "language_model": "Llama-2 Chat 7B",
-            "datasets": ["LLaVa v1.5 Instruct"],
-            "train_epochs": 1,
-        }
-    },
-    "llama2-chat+7b": {
-        "model_id": "llama2-chat+7b+dinosiglip",
-        "names": ["Llama-2 Chat 7B"],
-        "description": {
-            "name": "Llama-2 Chat 7B",
-            "optimization_procedure": "single-stage",
-            "visual_representation": "DINOv2 ViT-L/14 + SigLIP ViT-SO/14 @ 384px",
             "image_processing": "Letterbox",
             "language_model": "Llama-2 Chat 7B",
             "datasets": ["LLaVa v1.5 Instruct"],

@@ -313,9 +313,24 @@ class Ext_Exp_13B_Llama2_Chat(Exp_13B_One_Stage):
 
 
 @dataclass
-class Ext_Exp_8B_Llama3_Chat(Exp_7B_One_Stage):
-    model_id: str = "llama3-instruct+8b"
+class Ext_Exp_8B_Llama3_Instruct_CLIP(Exp_7B_One_Stage):
+    model_id: str = "llama3-instruct+8b+clip"
     llm_backbone_id: str = "llama3-8b-instruct"
+    vision_backbone_id: str = "clip-vit-l-336px"
+
+
+@dataclass
+class Ext_Exp_8B_Llama3_Instruct_DINOPv2SigLIP(Exp_7B_One_Stage):
+    model_id: str = "llama3-instruct+8b+dinosiglip"
+    llm_backbone_id: str = "llama3-8b-instruct"
+    vision_backbone_id: str = "dinosiglip-vit-so-384px"
+
+
+@dataclass
+class Ext_Exp_8B_Llama3_Instruct_SigLIP(Exp_7B_One_Stage):
+    model_id: str = "llama3-instruct+8b+siglip"
+    llm_backbone_id: str = "llama3-8b-instruct"
+    vision_backbone_id: str = "siglip-vit-so400m-384px"
 
 
 @dataclass
@@ -601,7 +616,9 @@ class ModelRegistry(Enum):
     # ~ Additional LLM Backbone Experiments :: Llama-2 Chat, Mistral v0.1, Mistral v0.1 Instruct, Phi-2 ~
     EXT_EXP_LLAMA2_CHAT_7B = Ext_Exp_7B_Llama2_Chat
     EXT_EXP_LLAMA2_CHAT_13B = Ext_Exp_13B_Llama2_Chat
-    EXT_EXP_LLAMA3_CHAT_8B = Ext_Exp_8B_Llama3_Chat
+    EXT_EXP_LLAMA3_CHAT_8B_CLIP = Ext_Exp_8B_Llama3_Instruct_CLIP
+    EXT_EXP_LLAMA3_CHAT_8B_DINOv2SigLIP = Ext_Exp_8B_Llama3_Instruct_DINOPv2SigLIP
+    EXT_EXP_LLAMA3_CHAT_8B_SIGLIP = Ext_Exp_8B_Llama3_Instruct_SigLIP
     EXT_EXP_GEMMA_INSTRUCT_2B_CLIP = Ext_Exp_2B_Gemma_Instruct_CLIP
     EXT_EXP_GEMMA_INSTRUCT_2B_DINOv2SigLIP = Ext_Exp_2B_Gemma_Instruct_DINOv2SigLIP
     EXT_EXP_GEMMA_INSTRUCT_2B_SigLIP = Ext_Exp_2B_Gemma_Instruct_SigLIP
