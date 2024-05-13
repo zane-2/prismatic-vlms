@@ -91,7 +91,7 @@ Status: Working
 ```bash
 # Run from the root of the repository
 export CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7
-torchrun --standalone --nnodes 1 --nproc-per-node 1 scripts/pretrain.py \
+torchrun --standalone --nnodes 1 --nproc-per-node 8 scripts/pretrain.py \
   --model.type "one-stage+7b" \
   --model.model_id "mistral-instruct-v0.2+7b+clip" \
   --model.image_resize_strategy "letterbox" \
