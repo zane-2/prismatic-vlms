@@ -672,12 +672,38 @@ MODEL_REGISTRY = {
         }
     },
     "llama3-instruct+8b+clip": {
-        "model_id": "llama3-instruct+8b",
+        "model_id": "llama3-instruct+8b+clip",
         "names": ["Llama-3 Instruct 8B"],
         "description": {
             "name": "Llama-3 Instruct 8B",
             "optimization_procedure": "single-stage",
             "visual_representation": "CLIP ViT-L/14 @ 336px",
+            "image_processing": "Letterbox",
+            "language_model": "Llama-3 Instruct 8B",
+            "datasets": ["LLaVa v1.5 Instruct"],
+            "train_epochs": 1,
+        }
+    },
+    "llama3-instruct+8b+siglip": {
+        "model_id": "llama3-instruct+8b",
+        "names": ["Llama-3 Instruct 8B"],
+        "description": {
+            "name": "Llama-3 Instruct 8B",
+            "optimization_procedure": "single-stage",
+            "visual_representation": "SigLIP ViT-SO/14 @ 384px",
+            "image_processing": "Letterbox",
+            "language_model": "Llama-3 Instruct 8B",
+            "datasets": ["LLaVa v1.5 Instruct"],
+            "train_epochs": 1,
+        }
+    },
+    "llama3-instruct+8b+dinosiglip": {
+        "model_id": "llama3-instruct+8b+dinosiglip",
+        "names": ["Llama-3 Instruct 8B"],
+        "description": {
+            "name": "Llama-3 Instruct 8B",
+            "optimization_procedure": "single-stage",
+            "visual_representation": "DINOv2 ViT-L/14 + SigLIP ViT-SO/14 @ 384px",
             "image_processing": "Letterbox",
             "language_model": "Llama-3 Instruct 8B",
             "datasets": ["LLaVa v1.5 Instruct"],
@@ -765,7 +791,7 @@ MODEL_REGISTRY = {
         }
     },
     "phi-instruct-3+4b+clip": {
-        "model_id": "phi-3-instruct+4b",
+        "model_id": "phi-instruct-3+4b+clip",
         "names": ["Phi-3 4B"],
         "description": {
             "name": "Phi-3 4B",
