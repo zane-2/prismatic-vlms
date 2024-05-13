@@ -712,12 +712,38 @@ MODEL_REGISTRY = {
         }
     },
     "mistral-instruct-v0.2+7b+clip": {
-        "model_id": "mistral-instruct-v0.2+7b",
+        "model_id": "mistral-instruct-v0.2+7b+clip",
         "names": ["Mistral Instruct v0.2 7B"],
         "description": {
             "name": "Mistral Instruct v0.2 7B",
             "optimization_procedure": "single-stage",
             "visual_representation": "CLIP ViT-L/14 @ 336px",
+            "image_processing": "Letterbox",
+            "language_model": "Mistral Instruct v0.2 7B",
+            "datasets": ["LLaVa v1.5 Instruct"],
+            "train_epochs": 1,
+        }
+    },
+    "mistral-instruct-v0.2+7b+siglip": {
+        "model_id": "mistral-instruct-v0.2+7b+siglip",
+        "names": ["Mistral Instruct v0.2 7B"],
+        "description": {
+            "name": "Mistral Instruct v0.2 7B",
+            "optimization_procedure": "single-stage",
+            "visual_representation": "SigLIP ViT-SO/14 @ 384px",
+            "image_processing": "Letterbox",
+            "language_model": "Mistral Instruct v0.2 7B",
+            "datasets": ["LLaVa v1.5 Instruct"],
+            "train_epochs": 1,
+        }
+    },
+    "mistral-instruct-v0.2+7b+dinosiglip": {
+        "model_id": "mistral-instruct-v0.2+7b+dinosiglip",
+        "names": ["Mistral Instruct v0.2 7B"],
+        "description": {
+            "name": "Mistral Instruct v0.2 7B",
+            "optimization_procedure": "single-stage",
+            "visual_representation": "DINOv2 ViT-L/14 + SigLIP ViT-SO/14 @ 384px",
             "image_processing": "Letterbox",
             "language_model": "Mistral Instruct v0.2 7B",
             "datasets": ["LLaVa v1.5 Instruct"],
@@ -745,6 +771,32 @@ MODEL_REGISTRY = {
             "name": "Phi-3 4B",
             "optimization_procedure": "single-stage",
             "visual_representation": "CLIP ViT-L/14 @ 336px",
+            "image_processing": "Letterbox",
+            "language_model": "Phi-3 4B",
+            "datasets": ["LLaVa v1.5 Instruct"],
+            "train_epochs": 1,
+        }
+    },
+    "phi-instruct-3+4b+siglip": {
+        "model_id": "phi-3-instruct+4b",
+        "names": ["Phi-3 4B"],
+        "description": {
+            "name": "Phi-3 4B",
+            "optimization_procedure": "single-stage",
+            "visual_representation": "SigLIP ViT-SO/14 @ 384px",
+            "image_processing": "Letterbox",
+            "language_model": "Phi-3 4B",
+            "datasets": ["LLaVa v1.5 Instruct"],
+            "train_epochs": 1,
+        }
+    },
+    "phi-instruct-3+4b+dinosiglip": {
+        "model_id": "phi-3-instruct+4b",
+        "names": ["Phi-3 4B"],
+        "description": {
+            "name": "Phi-3 4B",
+            "optimization_procedure": "single-stage",
+            "visual_representation": "DINOv2 ViT-L/14 + SigLIP ViT-SO/14 @ 384px",
             "image_processing": "Letterbox",
             "language_model": "Phi-3 4B",
             "datasets": ["LLaVa v1.5 Instruct"],
