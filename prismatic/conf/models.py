@@ -374,9 +374,24 @@ class Ext_Exp_3B_Phi_2(Exp_7B_One_Stage):
 
 
 @dataclass
-class Ext_Exp_4B_Phi_3_Instruct(Exp_7B_One_Stage):
+class Ext_Exp_4B_Phi_3_Instruct_CLIP(Exp_7B_One_Stage):
     model_id: str = "phi-3-instruct+4b"
     llm_backbone_id: str = "phi-3-instruct-4b"
+    vision_backbone_id: str = "clip-vit-l-336px"
+
+
+@dataclass
+class Ext_Exp_4B_Phi_3_Instruct_DINOv2SigLIP(Exp_7B_One_Stage):
+    model_id: str = "phi-3-instruct+4b"
+    llm_backbone_id: str = "phi-3-instruct-4b"
+    vision_backbone_id: str = "dinosiglip-vit-so-384px"
+
+
+@dataclass
+class Ext_Exp_4B_Phi_3_Instruct_SigLIP(Exp_7B_One_Stage):
+    model_id: str = "phi-3-instruct+4b"
+    llm_backbone_id: str = "phi-3-instruct-4b"
+    vision_backbone_id: str = "siglip-vit-so400m-384px"
 
 
 # Section 4.3B :: ✌️ --> Co-training on Language-only Data
@@ -631,7 +646,10 @@ class ModelRegistry(Enum):
     EXT_EXP_MISTRAL_INSTRUCT_V2_7B_SigLIP = Ext_Exp_7B_Mistral_Instruct_V2_DINOv2SigLIP
     EXT_EXP_MISTRAL_INSTRUCT_V2_7B_DINOv2SigLIP = Ext_Exp_7B_Mistral_Instruct_V2_SigLIP
     EXT_EXP_PHI_2_3B = Ext_Exp_3B_Phi_2
-    EXT_EXP_PHI_2_4B = Ext_Exp_4B_Phi_3_Instruct
+    EXT_EXP_PHI_3_4B_CLIP = Ext_Exp_4B_Phi_3_Instruct_CLIP
+    EXT_EXP_PHI_3_4B_DINOv2SigLIP = Ext_Exp_4B_Phi_3_Instruct_DINOv2SigLIP
+    EXT_EXP_PHI_3_4B_SigLIP = Ext_Exp_4B_Phi_3_Instruct_SigLIP
+
 
     # Cotraining w/ Unimodal Data
 
