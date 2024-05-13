@@ -1,5 +1,20 @@
 Create a file `.hf_token` in the project root directory with your HuggingFace token.
 
+Debugging
+
+```bash
+torchrun --standalone --nnodes 1 --nproc-per-node 1 scripts/pretrain.py \
+  --model.type "one-stage+7b" \
+  --model.model_id "gemma-instruct+8b+clip" \
+  --model.image_resize_strategy "letterbox" \
+  --model.llm_backbone_id "gemma-8b-instruct" \
+  --model.vision_backbone_id "clip-vit-l-336px" \
+  --model.finetune_global_batch_size 1 \
+  --model.finetune_per_device_batch_size 1 \
+  --wandb_entity "rylan" \
+  --wandb_project "prismatic-vlm"
+```
+
 
 ## Basic Training Run
 

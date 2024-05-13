@@ -375,21 +375,21 @@ class Ext_Exp_3B_Phi_2(Exp_7B_One_Stage):
 
 @dataclass
 class Ext_Exp_4B_Phi_3_Instruct_CLIP(Exp_7B_One_Stage):
-    model_id: str = "phi-3-instruct+4b"
+    model_id: str = "phi-3-instruct+4b+clip"
     llm_backbone_id: str = "phi-3-instruct-4b"
     vision_backbone_id: str = "clip-vit-l-336px"
 
 
 @dataclass
 class Ext_Exp_4B_Phi_3_Instruct_DINOv2SigLIP(Exp_7B_One_Stage):
-    model_id: str = "phi-3-instruct+4b"
+    model_id: str = "phi-3-instruct+4b+dinosiglip"
     llm_backbone_id: str = "phi-3-instruct-4b"
     vision_backbone_id: str = "dinosiglip-vit-so-384px"
 
 
 @dataclass
 class Ext_Exp_4B_Phi_3_Instruct_SigLIP(Exp_7B_One_Stage):
-    model_id: str = "phi-3-instruct+4b"
+    model_id: str = "phi-3-instruct+4b+siglip"
     llm_backbone_id: str = "phi-3-instruct-4b"
     vision_backbone_id: str = "siglip-vit-so400m-384px"
 
