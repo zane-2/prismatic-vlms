@@ -147,11 +147,13 @@ class FinetuneDataset(Dataset[Dict[str, torch.Tensor]]):
 
             # Llama 3 Tokenizer (Fast).
             elif isinstance(self.tokenizer, PreTrainedTokenizerFast):
-                raise NotImplementedError("Llama 3 Tokenizer (Fast) not yet implemented!")
+                # Sidd said that there was no harm in always applying rstrip, so do this to be safe!
+                msg = msg.rstrip()
 
             # Gemma Tokenizer
             elif isinstance(self.tokenizer, GemmaTokenizerFast):
-                raise NotImplementedError("Gemma Tokenizer (Fast) not yet implemented!")
+                # Sidd said that there was no harm in always applying rstrip, so do this to be safe!
+                msg = msg.rstrip()
 
             # Phi-2 Tokenizer == CodeGenTokenizer (Fast) -- no special handling!
             elif isinstance(self.tokenizer, CodeGenTokenizerFast):
