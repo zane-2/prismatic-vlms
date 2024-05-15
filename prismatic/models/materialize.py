@@ -80,7 +80,7 @@ LLM_BACKBONES = {
 
     # === Phi-2 Backbone ===
     "phi-2-3b": {"cls": PhiLLMBackbone, "kwargs": {}},
-    "phi-3-instruct+4b": {"cls": PhiLLMBackbone, "kwargs": {}},
+    "phi-3-instruct-4b": {"cls": PhiLLMBackbone, "kwargs": {}},
 
     # === Gemma-2 Instruct Backbones ===
     "gemma-2b-instruct": {"cls": GemmaLLMBackbone, "kwargs": {}},
