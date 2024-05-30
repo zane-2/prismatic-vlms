@@ -94,6 +94,9 @@ class LlamaLLMBackbone(HFCausalLLMBackbone):
         elif self.identifier.startswith("llama2-") and self.identifier.endswith("-chat"):
             return Llama2ChatPromptBuilder
 
+        elif self.identifier.startswith("llama3-") and self.identifier.endswith("-pure"):
+            return PurePromptBuilder
+
         elif self.identifier.startswith("llama3-") and self.identifier.endswith("-instruct"):
             return Llama3ChatPromptBuilder
 
