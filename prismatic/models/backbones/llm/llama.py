@@ -41,6 +41,11 @@ LLAMA2_MODELS = {
         "llm_family": "llama2", "llm_cls": LlamaForCausalLM, "hf_hub_path": "meta-llama/Llama-2-13b-chat-hf"
     },
 
+    # === Pure Meta Llama-3 Models ===
+    "llama3-8b-pure": {
+        "llm_family": "llama3", "llm_cls": LlamaForCausalLM, "hf_hub_path": "meta-llama/Meta-Llama-3-8B"
+    },
+
     # === Meta Llama-3 Chat Models ===
     "llama3-8b-instruct": {
         "llm_family": "llama3", "llm_cls": LlamaForCausalLM, "hf_hub_path": "meta-llama/Meta-Llama-3-8B-Instruct"

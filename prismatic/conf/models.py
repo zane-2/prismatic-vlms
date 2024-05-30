@@ -313,6 +313,13 @@ class Ext_Exp_13B_Llama2_Chat(Exp_13B_One_Stage):
 
 
 @dataclass
+class Ext_Exp_8B_Llama3_CLIP(Exp_7B_One_Stage):
+    model_id: str = "llama3+8b+clip"
+    llm_backbone_id: str = "llama3-8b-pure"
+    vision_backbone_id: str = "clip-vit-l-336px"
+
+
+@dataclass
 class Ext_Exp_8B_Llama3_Instruct_CLIP(Exp_7B_One_Stage):
     model_id: str = "llama3-instruct+8b+clip"
     llm_backbone_id: str = "llama3-8b-instruct"
@@ -320,10 +327,24 @@ class Ext_Exp_8B_Llama3_Instruct_CLIP(Exp_7B_One_Stage):
 
 
 @dataclass
+class Ext_Exp_8B_Llama3_DINOPv2SigLIP(Exp_7B_One_Stage):
+    model_id: str = "llama3+8b+dinosiglip"
+    llm_backbone_id: str = "llama3-8b-pure"
+    vision_backbone_id: str = "dinosiglip-vit-so-384px"
+
+
+@dataclass
 class Ext_Exp_8B_Llama3_Instruct_DINOPv2SigLIP(Exp_7B_One_Stage):
     model_id: str = "llama3-instruct+8b+dinosiglip"
     llm_backbone_id: str = "llama3-8b-instruct"
     vision_backbone_id: str = "dinosiglip-vit-so-384px"
+
+
+@dataclass
+class Ext_Exp_8B_Llama3_SigLIP(Exp_7B_One_Stage):
+    model_id: str = "llama3+8b+siglip"
+    llm_backbone_id: str = "llama3-8b-pure"
+    vision_backbone_id: str = "siglip-vit-so400m-384px"
 
 
 @dataclass
