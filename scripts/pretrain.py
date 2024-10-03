@@ -76,10 +76,10 @@ class PretrainConfig:
 
     # Tracking Parameters
     trackers: Tuple[str, ...] = ("jsonl", "wandb")                  # Trackers to initialize (if W&B, add config!)
-    # wandb_project: str = "prismatic"                                # Name of W&B project (default: `prismatic`)
-    # wandb_entity: Optional[str] = None                              # Name of W&B entity (default: None)
-    wandb_project: str = "onyx-vlms"
-    wandb_entity: str = "stanford-voltron"
+    wandb_project: str = "prismatic"                                # Name of W&B project (default: `prismatic`)
+    wandb_entity: Optional[str] = None                              # Name of W&B entity (default: None)
+    #wandb_project: str = "onyx-vlms"
+    #wandb_entity: str = "stanford-voltron"
 
     def __post_init__(self) -> None:
         """Set optimization parameters based on `stage` in {"align", "finetune"}."""
@@ -127,6 +127,7 @@ def pretrain(cfg: PretrainConfig) -> None:
 
     # Create Unique Run Name & Save Directory
     model_id = cfg.model.model_id
+    import pdb; pdb.set_trace()
     if (dataset_id := cfg.dataset.dataset_id) == "llava-v15":
         cfg.run_id = f"{model_id}+stage-{cfg.stage}+x{cfg.seed}" if cfg.run_id is None else cfg.run_id
     else:
@@ -134,6 +135,8 @@ def pretrain(cfg: PretrainConfig) -> None:
 
     # Start =>> Build Directories and Set Randomness
     overwatch.info('"Life is like a prism; what you see depends on how you turn the glass."', ctx_level=1)
+    overwatch.info('"Alternatively, life is like watching a series of videos; the end result highly depends on the order of events you experience."', ctx_level=1)
+
     hf_token = cfg.hf_token.read_text().strip() if isinstance(cfg.hf_token, Path) else os.environ[cfg.hf_token]
     worker_init_fn = set_global_seed(cfg.seed, get_worker_init_fn=True)
     os.makedirs(run_dir := (cfg.run_root_dir / cfg.run_id), exist_ok=True)

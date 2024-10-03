@@ -17,6 +17,7 @@ from prismatic.models.backbones.llm import (
     PhiLLMBackbone
 )
 from prismatic.models.backbones.vision import (
+    VideoCLIPViTBackbone,
     CLIPViTBackbone,
     DinoCLIPViTBackbone,
     DinoSigLIPViTBackbone,
@@ -53,6 +54,10 @@ VISION_BACKBONES = {
     # === Fused Backbones ===
     "dinoclip-vit-l-336px": {"cls": DinoCLIPViTBackbone, "kwargs": {"default_image_size": 336}},
     "dinosiglip-vit-so-384px": {"cls": DinoSigLIPViTBackbone, "kwargs": {"default_image_size": 384}},
+
+    # === Video-based Backbones ===
+    "video-clip-vit-b": {"cls": VideoCLIPViTBackbone, "kwargs": {"default_image_size": 224, "num_frames": 16}},
+    "video-clip-vit-l": {"cls": VideoCLIPViTBackbone, "kwargs": {"default_image_size": 224, "num_frames": 16}},
 }
 
 
@@ -104,7 +109,7 @@ def get_vision_backbone_and_transform(
         return vision_backbone, image_transform
 
     else:
-        raise ValueError(f"Vision Backbone `{vision_backbone_id}` is not supported!")
+        raise ValueError(f"Vision Backbone `{vision_backbone_id}` is not supported! Only support: {VISION_BACKBONES.keys()}")
 
 
 def get_llm_backbone_and_tokenizer(
@@ -126,7 +131,7 @@ def get_llm_backbone_and_tokenizer(
         return llm_backbone, tokenizer
 
     else:
-        raise ValueError(f"LLM Backbone `{llm_backbone_id}` is not supported!")
+        raise ValueError(f"LLM Backbone `{llm_backbone_id}` is not supported! Only support: {LLM_BACKBONES.keys()}")
 
 
 def get_vlm(

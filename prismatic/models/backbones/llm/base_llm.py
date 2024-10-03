@@ -105,7 +105,7 @@ class HFCausalLLMBackbone(LLMBackbone, ABC):
         hf_token: Optional[str] = None,
         inference_mode: bool = False,
         use_flash_attention_2: bool = False,
-        torch_dtype: torch.dtype = torch.float16,
+        torch_dtype: torch.dtype = torch.bfloat16,
     ) -> None:
         super().__init__(llm_backbone_id)
         self.llm_family = llm_family
@@ -171,6 +171,7 @@ class HFCausalLLMBackbone(LLMBackbone, ABC):
             #       this works well with base LLM generation.
             #   =>> Like Llama-2 Tokenizers -- we'll add a special PAD token for training purposes.
             "phi-2-3b",
+            "phi-3-instruct-4b",
         }
         if self.identifier in SPECIAL_CASES:
             return

@@ -92,7 +92,7 @@ class AlignDataset(Dataset[Dict[str, torch.Tensor]]):
         """Get a list of modalities (unimodal / text-only vs. multimodal) and length of conversations per example."""
         modality_lengths = []
         for example in self.examples:
-            is_multimodal = "image" in example
+            is_multimodal = "image" in example or "frames" in example
             n_words = sum([len(turn["value"].replace("<image>", "").split()) for turn in example["conversations"]])
             modality_lengths.append((is_multimodal, (n_image_patches + n_words) if is_multimodal else n_words))
         return modality_lengths
@@ -189,9 +189,24 @@ class FinetuneDataset(Dataset[Dict[str, torch.Tensor]]):
             labels[0] = IGNORE_INDEX
 
             # Process Image --> get "pixel_values" (will either be a torch.Tensor OR a Dict[str,torch.Tensor])
-            pixel_values = self.image_transform(Image.open(self.image_dir / image_path).convert("RGB"))
+            pixel_values = self.image_transform(Image.open(self.image_dir / image_path).convert("RGB")) # torch.size([3, 224, 224])
 
             return dict(pixel_values=pixel_values, input_ids=input_ids, labels=labels)
+        # === Handle multi-image (video) inputs ===
+        if "frames" in self.examples[idx]:
+            image_paths = [Path(image_path) for image_path in self.examples[idx]["frames"]]
+
+            # Set the <BOS> token's label to IGNORE_INDEX (since we're inserting the image patches right after)
+            labels[0] = IGNORE_INDEX
+
+            pixel_values = [self.image_transform(Image.open(self.image_dir / image_path).convert("RGB")) for image_path in image_paths]
+
+            # stack the pixel values to change from list of [3, 224, 224] to [num_frames, 3, 224, 224]
+            pixel_values = torch.stack(pixel_values, dim=0).to(pixel_values[0].device) # stack and put to device of first tensor
+            
+
+            return dict(pixel_values=pixel_values, input_ids=input_ids, labels=labels)
+
 
         else:
             # No image --> return `pixel_values` = None; Collator will do the smart batch handling for us!
@@ -201,7 +216,7 @@ class FinetuneDataset(Dataset[Dict[str, torch.Tensor]]):
         """Get a list of modalities (unimodal / text-only vs. multimodal) and length of conversations per example."""
         modality_lengths = []
         for example in self.examples:
-            is_multimodal = "image" in example
+            is_multimodal = "image" in example or "frames" in example
             n_words = sum([len(turn["value"].split()) for turn in example["conversations"]])
             modality_lengths.append((is_multimodal, n_words))
         return modality_lengths
