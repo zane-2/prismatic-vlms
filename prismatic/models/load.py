@@ -56,6 +56,14 @@ def load(
         config_json, checkpoint_pt = run_dir / "config.json", run_dir / "checkpoints" / "latest-checkpoint.pt"
         assert config_json.exists(), f"Missing `config.json` for `{run_dir = }`"
         assert checkpoint_pt.exists(), f"Missing checkpoint for `{run_dir = }`"
+    elif "checkpoints" in model_id_or_path and model_id_or_path.endswith(".pt"):
+        # Assume direct path to checkpoint (/path/to/run/checkpoints/ckpt.pt).  Config is stored in /path/to/run/config.json
+        overwatch.info(f"Loading from local path `{(run_dir := Path(model_id_or_path).parent)}`")
+
+        checkpoint_pt = Path(model_id_or_path)
+        run_dir = checkpoint_pt.parent.parent
+        config_json = run_dir / "config.json"
+        assert config_json.exists(), f"Missing `config.json` for `{run_dir = }`"
     else:
         rylan_trained_models = {
             "prism-gemma-instruct+2b+clip",
@@ -78,6 +86,8 @@ def load(
             "prism-phi-instruct-3+4b+dinosiglip",
         }
         
+        
+
         if (model_id_or_path not in rylan_trained_models) and (model_id_or_path not in GLOBAL_REGISTRY):
             raise ValueError(f"Couldn't find `{model_id_or_path = }; check `prismatic.available_model_names()`")
 

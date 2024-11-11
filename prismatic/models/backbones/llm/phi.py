@@ -38,6 +38,7 @@ class PhiLLMBackbone(HFCausalLLMBackbone):
         hf_token: Optional[str] = None,
         inference_mode: bool = False,
         use_flash_attention_2: bool = True,
+        **kwargs,
     ) -> None:
         super().__init__(
             llm_backbone_id,
@@ -46,6 +47,7 @@ class PhiLLMBackbone(HFCausalLLMBackbone):
             inference_mode=inference_mode,
             use_flash_attention_2=use_flash_attention_2,
             **PHI_MODELS[llm_backbone_id],
+            **kwargs,
         )
 
         # [Special Case] Phi PAD Token Handling --> for clarity, we add an extra token (and resize)

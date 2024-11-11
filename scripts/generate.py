@@ -24,9 +24,9 @@ from prismatic.overwatch import initialize_overwatch
 overwatch = initialize_overwatch(__name__)
 
 
-# Default Image URL (Beignets)
+# Default Image URL (snowy trees)
 DEFAULT_IMAGE_URL = (
-    "https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/beignets-task-guide.png"
+    "scripts/trees.png"
 )
 
 
@@ -60,7 +60,12 @@ def generate(cfg: GenerateConfig) -> None:
     vlm.to(device, dtype=torch.bfloat16)
 
     # Initial Setup
-    image = Image.open(requests.get(DEFAULT_IMAGE_URL, stream=True).raw).convert("RGB")
+    if os.path.exists(DEFAULT_IMAGE_URL):
+        image = Image.open(DEFAULT_IMAGE_URL).convert("RGB")
+    else:
+        image = Image.open(requests.get(DEFAULT_IMAGE_URL, stream=True).raw).convert("RGB")
+    # For now, copy image 8 times to simulate an 8 frame video
+
     prompt_builder = vlm.get_prompt_builder()
     system_prompt = prompt_builder.system_prompt
 
@@ -77,7 +82,7 @@ def generate(cfg: GenerateConfig) -> None:
         " key to enter input questions: "
     )
     while True:
-        user_input = input(repl_prompt)
+        user_input = "skip" #input(repl_prompt)
 
         if user_input.lower().startswith("q"):
             print("\n|=>> Received (q)uit signal => Exiting...")
@@ -103,11 +108,19 @@ def generate(cfg: GenerateConfig) -> None:
             )
 
         else:
-            print("\n[*] Entering Chat Session - CTRL-C to start afresh!\n===\n")
+            #print("\n[*] Entering Chat Session - CTRL-C to start afresh!\n===\n")
+            print("Chat is in video mode! All images will be copied 8 times to simulate an 8 frame video.\n")
             try:
                 while True:
-                    message = input("|=>> Enter Prompt: ")
+                    message = "Describe what is happening in the video." #input("|=>> Enter Prompt: ")
+                    print("Model input:", message)
+                    inp = input("|=>> Type something to change the default message (enter to continue).")
+                    if len(inp) > 0:
+                        message = inp
 
+
+                    if not isinstance(image, list):
+                        image = [image] * 8 # Make a batch of size 1 of 8 images
                     # Build Prompt
                     prompt_builder.add_turn(role="human", message=message)
                     prompt_text = prompt_builder.get_prompt()
@@ -122,11 +135,12 @@ def generate(cfg: GenerateConfig) -> None:
                         min_length=cfg.min_length,
                     )
                     prompt_builder.add_turn(role="gpt", message=generated_text)
-                    print(f"\t|=>> VLM Response >>> {generated_text}\n")
+                    print(f"\n\t|=>> VLM Response >>> {generated_text}\n")
 
             except KeyboardInterrupt:
-                print("\n===\n")
-                continue
+                exit()
+                #print("\n===\n")
+                #continue
 
 
 if __name__ == "__main__":

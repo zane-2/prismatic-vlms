@@ -106,6 +106,7 @@ class HFCausalLLMBackbone(LLMBackbone, ABC):
         inference_mode: bool = False,
         use_flash_attention_2: bool = False,
         torch_dtype: torch.dtype = torch.bfloat16,
+        **kwargs,
     ) -> None:
         super().__init__(llm_backbone_id)
         self.llm_family = llm_family
@@ -125,13 +126,25 @@ class HFCausalLLMBackbone(LLMBackbone, ABC):
                 do_sample=False,
                 temperature=1.0,
                 top_p=1.0,
+                **kwargs,
             )
 
         # [Contract] `inference_mode` means we're loading from a pretrained checkpoint; no need to load base weights!
         else:
             overwatch.info(f"Building empty [bold]{llm_family}[/] LLM from [underline]`{hf_hub_path}`[/]", ctx_level=1)
-            llm_config = AutoConfig.from_pretrained(hf_hub_path, token=hf_token)
-            self.llm = llm_cls._from_config(llm_config)
+            llm_config = AutoConfig.from_pretrained(hf_hub_path, token=hf_token, trust_remote_code=True)
+            #self.llm = llm_cls._from_config(llm_config)
+            self.llm = llm_cls.from_pretrained(
+                hf_hub_path,
+                token=hf_token,
+                use_flash_attention_2=use_flash_attention_2 if not self.inference_mode else False,
+                torch_dtype=torch_dtype,
+                # The following parameters are set to prevent `UserWarnings` from HF; we want greedy decoding!
+                do_sample=False,
+                temperature=1.0,
+                top_p=1.0,
+                **kwargs,
+            )
 
         # Lightweight Handling (with extended explanation) for setting some LLM Parameters
         #   => Set `decoder.use_cache = False` --> incompatible with gradient checkpointing (+ training in general)

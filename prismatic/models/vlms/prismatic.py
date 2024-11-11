@@ -289,6 +289,7 @@ class PrismaticVLM(VLM):
         # Handle Multimodal Indices is None --> pretend like the batch is fully multimodal (always image + text)!
         if multimodal_indices is None:
             multimodal_indices = torch.arange(len(input_ids), dtype=torch.long, device=input_ids.device)
+            multimodal_indices.to(pixel_values.device)
 
         # Handle Multimodal Indices is Empty (len == 0) --> simple unimodal forward
         elif len(multimodal_indices) == 0:
@@ -313,6 +314,7 @@ class PrismaticVLM(VLM):
             if isinstance(pixel_values, dict):
                 patch_features = self.vision_backbone({k: pixel_values[k][multimodal_indices] for k in pixel_values})
             else:
+                #import pdb; pdb.set_trace()
                 patch_features = self.vision_backbone(pixel_values[multimodal_indices])
 
         # Projection Logic :: [bsz, num_patches, llm_embed_dim] =>> num_patches = (2 *) (256 + 1) for ViT-L + CLS
@@ -534,18 +536,22 @@ class PrismaticVLM(VLM):
 
     @torch.inference_mode()
     def generate(self, image: Image, prompt_text: str, **kwargs: str) -> str:
+        #import pdb; pdb.set_trace()
         # For now, only support generation with a batch size of 1 for simplicity
         image_transform, tokenizer = self.vision_backbone.image_transform, self.llm_backbone.tokenizer
-
         # Prepare Inputs
         input_ids = tokenizer(prompt_text, truncation=True, return_tensors="pt").input_ids.to(self.device)
-        pixel_values = image_transform(image)
-        if isinstance(pixel_values, torch.Tensor):
-            pixel_values = pixel_values[None, ...].to(self.device)
-        elif isinstance(pixel_values, dict):
-            pixel_values = {k: v[None, ...].to(self.device) for k, v in pixel_values.items()}
-        else:
-            raise ValueError(f"Unsupported `pixel_values` type = {type(pixel_values)}")
+        if isinstance(image, list): # List of images (video frames)
+            pixel_values = [image_transform(img) for img in image]
+            pixel_values = torch.stack(pixel_values, dim=0).to(self.device).unsqueeze(0) # stack and put to device of first tensor
+        else: # Single image
+            pixel_values = image_transform(image)
+            if isinstance(pixel_values, torch.Tensor):
+                pixel_values = pixel_values[None, ...].to(self.device)
+            elif isinstance(pixel_values, dict):
+                pixel_values = {k: v[None, ...].to(self.device) for k, v in pixel_values.items()}
+            else:
+                raise ValueError(f"Unsupported `pixel_values` type = {type(pixel_values)}")
 
         # Invoke super().generate --> taps into `GenerationMixin` which (redirects) to `forward()`
         autocast_dtype = self.llm_backbone.half_precision_dtype
