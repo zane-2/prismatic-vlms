@@ -13,6 +13,8 @@ import copy
 import json
 from pathlib import Path
 from typing import Dict, List, Tuple, Type
+import os
+import numpy as np
 
 import torch
 from PIL import Image
@@ -21,9 +23,56 @@ from transformers import CodeGenTokenizerFast, GemmaTokenizerFast, LlamaTokenize
 
 from prismatic.models.backbones.llm.prompting import PromptBuilder
 from prismatic.models.backbones.vision import ImageTransform
+import random 
 
 # HuggingFace Default / Llama-2 IGNORE_INDEX (for labels)
 IGNORE_INDEX = -100
+
+def convert_to_prismatic_format(conversation_data):
+    """
+    Convert conversation data from the given format:
+    {
+        'id': 'train-0000000000',
+        'source': 'webvid10m',
+        'conversations': [{'images': ['0/0.png', '0/1.png', '0/2.png', '0/3.png', '0/4.png', '0/5.png', '0/6.png', '0/7.png'], 'user': 'Describe what is happening in the video.', 'assistant': 'Aerial shot winter forest'}]
+    }
+    
+    To the desired format:
+    {
+        'id': '0000000000',
+        'frames': ['0/0.png', '0/1.png', '0/2.png', '0/3.png', '0/4.png', '0/5.png', '0/6.png', '0/7.png'],
+        'conversations': [
+            {'from': 'human', 'value': '<image>\nDescribe what is happening in the video.'},
+            {'from': 'gpt', 'value': 'Aerial shot winter forest'}
+        ]
+    }
+    """
+    # Extract the ID without 'train-' prefix
+    new_id = conversation_data['id'].replace('train-', '')
+    
+    # Get the image list
+    frames = conversation_data['conversations'][0]['images']
+    
+    # Build the conversation list in the new format
+    new_conversations = [
+        {
+            'from': 'human',
+            'value': f"<image>\n{conversation_data['conversations'][0]['user']}"
+        },
+        {
+            'from': 'gpt',
+            'value': conversation_data['conversations'][0]['assistant']
+        }
+    ]
+    
+    # Construct the new format
+    new_format = {
+        'id': new_id,
+        'frames': frames,
+        'conversations': new_conversations
+    }
+    
+    return new_format
 
 
 class AlignDataset(Dataset[Dict[str, torch.Tensor]]):
@@ -109,16 +158,26 @@ class FinetuneDataset(Dataset[Dict[str, torch.Tensor]]):
         image_transform: ImageTransform,
         tokenizer: PreTrainedTokenizerBase,
         prompt_builder_fn: Type[PromptBuilder],
+        shuffle_frames: bool = True,
     ) -> None:
         super().__init__()
         self.instruct_json, self.image_dir = instruct_json, image_dir
         self.image_transform, self.tokenizer = image_transform, tokenizer
         self.prompt_builder_fn = prompt_builder_fn
         self.dataset_type = "finetune"
+        self.shuffle_frames = shuffle_frames
+
+        if self.shuffle_frames:
+            print("Shuffling frame order for finetune dataset!")
 
         # Load Instruct JSON
-        with open(self.instruct_json, "r") as f:
-            self.examples = json.load(f)
+        if self.instruct_json.suffix.endswith(".jsonl"):
+            with open(self.instruct_json, "r") as f:
+                self.examples = [convert_to_prismatic_format(json.loads(line)) for line in f]
+        else: 
+            with open(self.instruct_json, "r") as f:
+                self.examples = json.load(f)
+
 
     # === Unimodal + Multimodal Handling ===
     def __getitem__(self, idx: int) -> Dict[str, torch.Tensor]:
@@ -133,6 +192,13 @@ class FinetuneDataset(Dataset[Dict[str, torch.Tensor]]):
 
         :return: Dictionary of {"pixel_values": torch.Tensor, "input_ids": torch.Tensor, "labels": torch.Tensor}
         """
+
+        if idx >= len(self.examples):
+            return {
+                "input_ids": torch.tensor([]),
+                "labels": torch.tensor([]),
+                "pixel_values": torch.tensor([]),
+            }
         conversation = self.examples[idx]["conversations"]
 
         # Create Prompt Builder --> add each message sequentially
@@ -180,7 +246,7 @@ class FinetuneDataset(Dataset[Dict[str, torch.Tensor]]):
 
         # Handle Truncation (if necessary)
         input_ids, labels = input_ids[: self.tokenizer.model_max_length], labels[: self.tokenizer.model_max_length]
-
+        
         # === Handle "unimodal" (language-only) vs. "multimodal" ===
         if "image" in self.examples[idx]:
             image_path = Path(self.examples[idx]["image"])
@@ -196,10 +262,21 @@ class FinetuneDataset(Dataset[Dict[str, torch.Tensor]]):
         if "frames" in self.examples[idx]:
             image_paths = [Path(image_path) for image_path in self.examples[idx]["frames"]]
 
+            if self.shuffle_frames:
+                random.shuffle(image_paths)
+
             # Set the <BOS> token's label to IGNORE_INDEX (since we're inserting the image patches right after)
             labels[0] = IGNORE_INDEX
 
             pixel_values = [self.image_transform(Image.open(self.image_dir / image_path).convert("RGB")) for image_path in image_paths]
+            #print("Saving images to debug in frames/")
+            #os.makedirs("frames", exist_ok=True)
+            #for i, image in enumerate(pixel_values):
+                # Convert image tensor to PIL image
+            #    image = image.permute(1, 2, 0).cpu().numpy()
+            #    image = (255 * (image - np.min(image)) / (np.max(image) - np.min(image))).astype(np.uint8)
+            #    image = Image.fromarray(image)
+            #    image.save(f"frames/{i}.png")
 
             # stack the pixel values to change from list of [3, 224, 224] to [num_frames, 3, 224, 224]
             pixel_values = torch.stack(pixel_values, dim=0).to(pixel_values[0].device) # stack and put to device of first tensor
@@ -223,3 +300,4 @@ class FinetuneDataset(Dataset[Dict[str, torch.Tensor]]):
 
     def __len__(self) -> int:
         return len(self.examples)
+    

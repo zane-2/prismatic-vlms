@@ -60,6 +60,10 @@ class PretrainConfig:
         default_factory=DatasetConfig.get_choice_class(DatasetRegistry.LLAVA_V15.dataset_id)
     )
 
+    val_dataset: DatasetConfig = field(
+        default_factory=DatasetConfig.get_choice_class(DatasetRegistry.WEBVID_VAL.dataset_id)
+    )
+    
     # Pretraining Stage in < align (projector-only) | finetune (projector + LLM) | full-finetune (all) >
     # ---
     stage: str = "finetune"                                         # Pretraining Stage in < align | finetune >
@@ -127,7 +131,7 @@ def pretrain(cfg: PretrainConfig) -> None:
 
     # Create Unique Run Name & Save Directory
     model_id = cfg.model.model_id
-    import pdb; pdb.set_trace()
+    
     if (dataset_id := cfg.dataset.dataset_id) == "llava-v15":
         cfg.run_id = f"{model_id}+stage-{cfg.stage}+x{cfg.seed}" if cfg.run_id is None else cfg.run_id
     else:
@@ -135,7 +139,7 @@ def pretrain(cfg: PretrainConfig) -> None:
 
     # Start =>> Build Directories and Set Randomness
     overwatch.info('"Life is like a prism; what you see depends on how you turn the glass."', ctx_level=1)
-    overwatch.info('"Alternatively, life is like watching a series of videos; the end result highly depends on the order of events you experience."', ctx_level=1)
+    overwatch.info('"Alternatively, life can be viewed like a movie; what you perceive highly depends on the order of events."', ctx_level=1)
 
     hf_token = cfg.hf_token.read_text().strip() if isinstance(cfg.hf_token, Path) else os.environ[cfg.hf_token]
     worker_init_fn = set_global_seed(cfg.seed, get_worker_init_fn=True)
@@ -190,6 +194,16 @@ def pretrain(cfg: PretrainConfig) -> None:
         padding_side=tokenizer.padding_side,
     )
 
+    val_dataset, val_collator = get_dataset_and_collator( # val_collator not used currently
+        cfg.stage,
+        cfg.val_dataset,
+        image_transform,
+        tokenizer,
+        prompt_builder_fn=llm_backbone.prompt_builder_fn,
+        default_image_resolution=vision_backbone.default_image_resolution,
+        padding_side=tokenizer.padding_side,
+    )
+
     # Create Train Strategy
     overwatch.info(f"Initializing Train Strategy `{cfg.train_strategy}`")
     train_strategy = get_train_strategy(
@@ -227,7 +241,7 @@ def pretrain(cfg: PretrainConfig) -> None:
 
     # Run Training
     overwatch.info("Starting Training Loop")
-    train_strategy.run_training(train_dataset, collator, metrics, stage=cfg.stage, seed=cfg.seed)
+    train_strategy.run_training(train_dataset, val_dataset, collator, metrics, stage=cfg.stage, seed=cfg.seed)
 
     # Finalize
     overwatch.info("Done with Training =>> Finalizing Metrics")

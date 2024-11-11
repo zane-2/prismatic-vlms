@@ -307,6 +307,9 @@ class PrismaticVLM(VLM):
 
         # Run Visual Feature Extraction
         with torch.set_grad_enabled(self.vision_backbone_requires_grad):
+            #print("[LOGGING in prismatic.py] Pixel values should be [1, t, 3, 224, 224] if video data loading is working properly.")
+            #print("[LOGGING in prismatic.py] Pixel values shape:", pixel_values.shape)
+            
             if isinstance(pixel_values, dict):
                 patch_features = self.vision_backbone({k: pixel_values[k][multimodal_indices] for k in pixel_values})
             else:

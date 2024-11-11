@@ -45,6 +45,53 @@ class LLaVa_V15_Config(DatasetConfig):
     )
     dataset_root_dir: Path = Path("data")
 
+@dataclass
+class Video_LLaVa_V15_Config(LLaVa_V15_Config):
+    dataset_id: str = "video-llava-v15"
+
+    align_stage_components: Tuple[Path, Path] = (
+        Path("download/llava-laion-cc-sbu-558k/chat.json"),
+        Path("download/llava-laion-cc-sbu-558k/"),
+    )
+    finetune_stage_components: Tuple[Path, Path] = (
+        Path("download/llava-v1.5-instruct/llava_v1_5_mix665k_videos_2frame.json"),
+        Path("download/llava-v1.5-instruct/"),
+    )
+    dataset_root_dir: Path = Path("data")
+
+@dataclass
+class WebVid(DatasetConfig):
+    dataset_id: str = "webvid"
+
+    align_stage_components: Tuple[Path, Path] = (
+        Path("/home/v-zadurante/code/augmenting_videos/datasets/webvid/webvid10m_train.jsonl"),
+        Path("/home/v-zadurante/code/augmenting_videos/datasets/webvid/frames")
+    )
+
+    finetune_stage_components: Tuple[Path, Path] = (
+        Path("/home/v-zadurante/code/augmenting_videos/datasets/webvid/webvid10m_train.jsonl"),
+        Path("/home/v-zadurante/code/augmenting_videos/datasets/webvid/frames")
+    )
+
+    dataset_root_dir: Path = Path("/home/v-zadurante/code/augmenting_videos/datasets/webvid")
+
+
+@dataclass
+class WebVid_Val(DatasetConfig):
+    dataset_id: str = "webvid_val"
+
+    finetune_stage_components: Tuple[Path, Path] = (
+        Path("/home/v-zadurante/code/augmenting_videos/datasets/webvid/webvid10m_val.jsonl"),
+        Path("/home/v-zadurante/code/augmenting_videos/datasets/webvid/frames")
+    )
+
+    align_stage_components: Tuple[Path, Path] = (
+        Path("/home/v-zadurante/code/augmenting_videos/datasets/webvid/webvid10m_val.jsonl"),
+        Path("/home/v-zadurante/code/augmenting_videos/datasets/webvid/frames")
+    )
+
+    dataset_root_dir: Path = Path("/home/v-zadurante/code/augmenting_videos/datasets/webvid")
+
 
 # [Multimodal-Only] LLava-v15 WITHOUT the Language-Only ShareGPT Data (No Co-Training)
 @dataclass
@@ -122,6 +169,11 @@ class DatasetRegistry(Enum):
     LLAVA_LRV = LLaVa_LRV_Config
 
     LLAVA_LVIS4V_LRV = LLaVa_LVIS4V_LRV_Config
+
+    # === Video Datasets ===
+    VIDEO_LLAVA_V15 = Video_LLaVa_V15_Config
+    WEBVID = WebVid
+    WEBVID_VAL = WebVid_Val
 
     @property
     def dataset_id(self) -> str:
