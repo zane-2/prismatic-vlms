@@ -42,7 +42,6 @@ class VideoCLIPViTBackbone(CLIPViTBackbone):
         # Reshape the input tensor to transform from (B, T, C, H, W) to (B * T, C, H, W)
 
         assert x.shape[1] == self.num_frames, f"Expected input tensor to have {self.num_frames} frames in the second dimension, but got {x.shape[1]} frames instead.  Total shape was: {x.shape}"
-        self.eval()  # Disable dropout and other stochastic layers to compare embeddings
 
         #output_embed_first_frame = super().forward(x[:, 0])
         #output_embed_first_frame_2 = super().forward(x[:, 0])
