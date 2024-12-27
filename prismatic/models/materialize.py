@@ -56,11 +56,7 @@ VISION_BACKBONES = {
     "dinosiglip-vit-so-384px": {"cls": DinoSigLIPViTBackbone, "kwargs": {"default_image_size": 384}},
 
     # === Video-based Backbones ===
-<<<<<<< HEAD
     "video-clip-vit-b": {"cls": VideoCLIPViTBackbone, "kwargs": {"default_image_size": 224, "num_frames": 8}},
-=======
-    "video-clip-vit-b": {"cls": VideoCLIPViTBackbone, "kwargs": {"default_image_size": 224, "num_frames":8}},
->>>>>>> a8773b0668a30c1f16f2502e50453342abaf5c39
     "video-clip-vit-l": {"cls": VideoCLIPViTBackbone, "kwargs": {"default_image_size": 224, "num_frames": 8}},
     "video-clip-vit-l-336px": {"cls": VideoCLIPViTBackbone, "kwargs": {"default_image_size": 336, "num_frames": 8}},
 }

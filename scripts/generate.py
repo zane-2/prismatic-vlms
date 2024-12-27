@@ -8,10 +8,7 @@ Run with: python scripts/generate.py --model_path <PATH TO LOCAL MODEL OR HF HUB
 """
 
 import os
-<<<<<<< HEAD
 # os.environ["HUGGINGFACE_HUB_CACHE"] = '/vision/u/silsingh/.cache/huggingface/hub'
-=======
->>>>>>> a8773b0668a30c1f16f2502e50453342abaf5c39
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Union
@@ -24,17 +21,13 @@ from PIL import Image
 from prismatic import load
 from prismatic.overwatch import initialize_overwatch
 
-<<<<<<< HEAD
 # import cProfile
 
-=======
->>>>>>> a8773b0668a30c1f16f2502e50453342abaf5c39
 # Initialize Overwatch =>> Wraps `logging.Logger`
 overwatch = initialize_overwatch(__name__)
 
 
 # Default Image URL (snowy trees)
-<<<<<<< HEAD
 # DEFAULT_IMAGE_URL = (
 #     "scripts/trees.png"
 # )
@@ -42,23 +35,13 @@ overwatch = initialize_overwatch(__name__)
 # this path has a list of frames for the video
 # frames_path = '../NExT-OE/4924794333'
 frames_path = "10006322"
-=======
-DEFAULT_IMAGE_URL = (
-    "scripts/trees.png"
-)
-
->>>>>>> a8773b0668a30c1f16f2502e50453342abaf5c39
 
 @dataclass
 class GenerateConfig:
     # fmt: off
     model_path: Union[str, Path] = (                                    # Path to Pretrained VLM (on disk or HF Hub)
-<<<<<<< HEAD
         "prism-clip+7b"
         # "prism-phi-instruct-3+4b+clip" # "phi-2+3b" # "prism-dinosiglip+7b"
-=======
-        "prism-dinosiglip+7b"
->>>>>>> a8773b0668a30c1f16f2502e50453342abaf5c39
     )
 
     # HF Hub Credentials (required for Gated Models like Llama-2)
@@ -78,15 +61,11 @@ def generate(cfg: GenerateConfig) -> None:
     overwatch.info(f"Initializing Generation Playground with Prismatic Model `{cfg.model_path}`")
     hf_token = cfg.hf_token.read_text().strip() if isinstance(cfg.hf_token, Path) else os.environ[cfg.hf_token]
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
-<<<<<<< HEAD
     # print('device:', device) # cuda
-=======
->>>>>>> a8773b0668a30c1f16f2502e50453342abaf5c39
 
     # Load the pretrained VLM --> uses default `load()` function
     vlm = load(cfg.model_path, hf_token=hf_token)
     vlm.to(device, dtype=torch.bfloat16)
-<<<<<<< HEAD
     vlm.eval()
     
     # Initial Setup
@@ -101,16 +80,6 @@ def generate(cfg: GenerateConfig) -> None:
         if not frame.startswith('.'):
             image.append(Image.open(os.path.join(frames_path, frame)).convert("RGB"))
 
-=======
-
-    # Initial Setup
-    if os.path.exists(DEFAULT_IMAGE_URL):
-        image = Image.open(DEFAULT_IMAGE_URL).convert("RGB")
-    else:
-        image = Image.open(requests.get(DEFAULT_IMAGE_URL, stream=True).raw).convert("RGB")
-    # For now, copy image 8 times to simulate an 8 frame video
-
->>>>>>> a8773b0668a30c1f16f2502e50453342abaf5c39
     prompt_builder = vlm.get_prompt_builder()
     system_prompt = prompt_builder.system_prompt
 
@@ -118,11 +87,7 @@ def generate(cfg: GenerateConfig) -> None:
     print(
         "[*] Dropping into Prismatic VLM REPL with Default Generation Setup => Initial Conditions:\n"
         f"       => Prompt Template:\n\n{prompt_builder.get_potential_prompt('<INSERT PROMPT HERE>')}\n\n"
-<<<<<<< HEAD
         f"       => Default Image URL: `{frames_path}`\n===\n"
-=======
-        f"       => Default Image URL: `{DEFAULT_IMAGE_URL}`\n===\n"
->>>>>>> a8773b0668a30c1f16f2502e50453342abaf5c39
     )
 
     # REPL
@@ -167,10 +132,6 @@ def generate(cfg: GenerateConfig) -> None:
                     if len(inp) > 0:
                         message = inp
 
-<<<<<<< HEAD
-=======
-
->>>>>>> a8773b0668a30c1f16f2502e50453342abaf5c39
                     if not isinstance(image, list):
                         image = [image] * 8 # Make a batch of size 1 of 8 images
                     # Build Prompt
@@ -179,11 +140,7 @@ def generate(cfg: GenerateConfig) -> None:
 
                     # Generate from the VLM
                     generated_text = vlm.generate(
-<<<<<<< HEAD
                         image[0],
-=======
-                        image,
->>>>>>> a8773b0668a30c1f16f2502e50453342abaf5c39
                         prompt_text,
                         do_sample=cfg.do_sample,
                         temperature=cfg.temperature,
@@ -195,16 +152,7 @@ def generate(cfg: GenerateConfig) -> None:
 
             except KeyboardInterrupt:
                 exit()
-<<<<<<< HEAD
-=======
-                #print("\n===\n")
-                #continue
->>>>>>> a8773b0668a30c1f16f2502e50453342abaf5c39
 
 
 if __name__ == "__main__":
     generate()
-<<<<<<< HEAD
-
-=======
->>>>>>> a8773b0668a30c1f16f2502e50453342abaf5c39

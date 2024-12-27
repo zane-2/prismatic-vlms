@@ -116,10 +116,6 @@ class PrismaticVLM(VLM):
 
         return vlm
 
-<<<<<<< HEAD
-
-=======
->>>>>>> a8773b0668a30c1f16f2502e50453342abaf5c39
     def get_prompt_builder(self, system_prompt: Optional[str] = None) -> PromptBuilder:
         prompt_initializer: Type[PromptBuilder] = self.llm_backbone.prompt_builder_fn
         return prompt_initializer(self.model_family, system_prompt=system_prompt)

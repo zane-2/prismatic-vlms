@@ -29,11 +29,7 @@ class ModelConfig(ChoiceRegistry):
     # Backbone Parameters
     image_resize_strategy: str                              # Resizing strategy in < crop | letterbox | corner-pad >
     llm_max_length: int                                     # Maximum context length for LLM (can be < than max!)
-<<<<<<< HEAD
     
-=======
-
->>>>>>> a8773b0668a30c1f16f2502e50453342abaf5c39
     # === Multi-Stage Optimization Hyperparameters ===
     # By default, we assume an AdamW optimizer with FSDP (Gradient Sharding or Full Sharding depending on stage)
 
