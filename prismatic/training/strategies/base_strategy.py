@@ -265,7 +265,10 @@ class TrainingStrategy(ABC):
                         # Update Progress Bar
                         progress.update()
                         progress.set_description(status)
+<<<<<<< HEAD
 
+=======
+>>>>>>> a8773b0668a30c1f16f2502e50453342abaf5c39
                 # Do validation
                 if val_dataset is not None:
                     self.vlm.eval()
