@@ -150,3 +150,6 @@ data/
 checkpoints/
 runs/
 webvid/
+
+# dataset
+*.json
