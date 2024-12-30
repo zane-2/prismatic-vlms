@@ -23,7 +23,7 @@
 # FSDP_CPU_RAM_EFFICIENT_LOADING=1 torchrun ...
 torchrun --standalone --nnodes 1 --nproc-per-node 4 scripts/pretrain.py \
   --model.type "one-stage+7b" \
-  --model.model_id "test-run-prism-clip+7b-webvid-50k-frames=4-gpus=4-000" \
+  --model.model_id "prism-clip+7b-webvid-train-45k-diff-prompts-frames=4-gpus=4-epochs=2-002" \
   --dataset.type "webvid" \
   --model.image_resize_strategy "resize-naive" \
   --model.llm_backbone_id "llama2-7b-pure" \
@@ -33,7 +33,8 @@ torchrun --standalone --nnodes 1 --nproc-per-node 4 scripts/pretrain.py \
   --model.finetune_per_device_batch_size 1 \
   --model.num_frames 4 \
   --model.init_from_model "prism-clip+7b" \
-  --model.repo_id "TRI-ML/prismatic-vlms"
+  --model.repo_id "TRI-ML/prismatic-vlms" \
+  --model.finetune_epochs 2
 
 # llm backbone: "llama2-7b-pure", "phi-2-3b", "phi-3-instruct-4b"
 # vision_backbone_id: "dinosiglip-vit-so-384px", "clip-vit-l-336px", "video-clip-vit-l-336px"

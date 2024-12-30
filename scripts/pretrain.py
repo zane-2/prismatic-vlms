@@ -60,11 +60,11 @@ class PretrainConfig:
 
     # DatasetConfig (`prismatic/conf/datasets.py`); override with --dataset.type `DatasetRegistry.<DATASET>.dataset_id`
     dataset: DatasetConfig = field(
-        default_factory=DatasetConfig.get_choice_class(DatasetRegistry.WEBVID.dataset_id)  # TODO LLAVA_V15
+        default_factory=DatasetConfig.get_choice_class(DatasetRegistry.WEBVID.dataset_id)  # TODO - pick a dataset to train on
     )
 
     val_dataset: DatasetConfig = field(
-        default_factory=DatasetConfig.get_choice_class(DatasetRegistry.WEBVID.dataset_id)  # TODO WEBVID_VAL
+        default_factory=DatasetConfig.get_choice_class(DatasetRegistry.WEBVID_VAL.dataset_id)
     )
     
     # Pretraining Stage in < align (projector-only) | finetune (projector + LLM) | full-finetune (all) >

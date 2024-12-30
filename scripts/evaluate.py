@@ -2,6 +2,7 @@ import os
 import csv
 from tqdm import tqdm
 import numpy as np
+import random
 from collections import defaultdict
 
 # os.environ["HUGGINGFACE_HUB_CACHE"] = '/vision/u/silsingh/.cache/huggingface/hub'
@@ -70,6 +71,7 @@ def set_up_prismatic_vlm(cfg: GenerateConfig):
     # Load the pretrained VLM --> uses default `load()` function
     vlm = load(cfg.model_path, hf_token=hf_token)
     vlm.to(device, dtype=torch.bfloat16)
+    vlm.eval()
 
     return vlm
 
@@ -223,9 +225,101 @@ def evaluate_zero_shot(model_path='prism-dinosiglip+7b'):
         json.dump(vlm_answers, outfile, indent=2)
 
 
+def eval_finetuned_prismatic_models(model_path, webvid_val_path, save_path, sample_size=50, num_frames=4, save_eval_images=None):
+    cfg = GenerateConfig()
+    cfg.model_path = model_path
+    vlm = set_up_prismatic_vlm(cfg)
+
+    WEBVID_VIDEOS_PATH = "webvid"
+    DEFAULT_PROMPT = "Describe what is happening in the video."
+    with open(webvid_val_path, "r") as fp:
+        val_videos = json.load(fp)
+
+    val_subset = val_videos[:sample_size]
+    eval_metadata = []
+
+    for val_example in tqdm(val_subset):
+        metadata = {}
+        video_id = val_example["id"]
+        metadata["id"] = video_id
+
+        prompt = val_example["conversations"][0]["value"].replace("<image>\n", "")
+
+        gt_caption = val_example["conversations"][1]["value"]
+        metadata["gt_caption"] = gt_caption
+
+        frames = val_example["frames"][:num_frames]
+        frames_pil = []
+        for frame in frames:
+            frames_pil.append(Image.open(f"{WEBVID_VIDEOS_PATH}/{frame}").convert("RGB"))
+        
+        if save_eval_images:
+            os.makedirs(save_eval_images, exist_ok=True)
+            w,h = frames_pil[0].size
+            grid = Image.new('RGB', size=(w*2, h*num_frames//2))
+             
+            for i,fr in enumerate(frames_pil):
+                grid.paste(fr, box=(i%2*w, i//2*h))
+
+            grid.save(os.path.join(save_eval_images, f"{video_id}.png"))
+
+
+        prompt_text = f"Input: {prompt}\nOutput: "
+        generated_text = vlm.generate(
+                            frames_pil,
+                            prompt_text,
+                            do_sample=cfg.do_sample,
+                            temperature=cfg.temperature,
+                            max_new_tokens=cfg.max_new_tokens,
+                            min_length=cfg.min_length,
+                        )
+        metadata["model_output"] = [
+            {
+                "prompt": prompt,
+                "generated": generated_text
+            }
+        ]
+        
+        prompt_text = f"Input: {DEFAULT_PROMPT}\nOutput: "
+        generated_text = vlm.generate(
+                            frames_pil,
+                            prompt_text,
+                            do_sample=cfg.do_sample,
+                            temperature=cfg.temperature,
+                            max_new_tokens=cfg.max_new_tokens,
+                            min_length=cfg.min_length,
+                        )
+
+        metadata["model_output"].append(
+            {
+                "prompt": DEFAULT_PROMPT,
+                "generated": generated_text
+            }
+        )
+
+        eval_metadata.append(metadata)
+
+    
+    with open(save_path, 'w') as outfile:
+        json.dump(eval_metadata, outfile, indent=2)
+
+        
+
+
+
+
+
 if __name__ == "__main__":
+    ########## EVALUATION OF FINETUNED MODELS #############
+    model_path = "runs/webvid+prism-clip+7b-webvid-train-45k-frames=4-gpus=4-epochs=2-001+stage-finetune+x7/checkpoints/step-022956-epoch-01-loss=2.0254.pt" # "webvid+prism-clip+7b-webvid-train-45k-diff-prompts-frames=4-gpus=4-epochs=2-002+stage-finetune+x7/checkpoints/step-022956-epoch-01-loss=2.1013.pt"
+    webvid_val_path = "webvid_val_5k_diff_prompts.json"
+    save_path = "eval_webvid_45k_single_prompt.json"
+    # save_eval_images = "finteuned_webvid_45k_eval_50_video_frames"
+    eval_finetuned_prismatic_models(model_path, webvid_val_path, save_path)
+
+
     # model_path = 'prism-dinosiglip+7b'
-    model_paths = [
+    # model_paths = [
         # "prism-clip-controlled+7b",
         # "prism-clip-controlled+13b",
         # "prism-clip+7b",
@@ -238,11 +332,11 @@ if __name__ == "__main__":
         # "prism-dinosiglip-controlled+13b",
         # "prism-dinosiglip+7b",
         # "prism-dinosiglip+13b",
-        "prism-dinosiglip-224px-controlled+7b",
-        "prism-dinosiglip-224px+7b"
-    ]
-    for model_path in tqdm(model_paths):
-        evaluate_zero_shot(model_path)
+    #     "prism-dinosiglip-224px-controlled+7b",
+    #     "prism-dinosiglip-224px+7b"
+    # ]
+    # for model_path in tqdm(model_paths):
+    #     evaluate_zero_shot(model_path)
     
     # question = 'is the baby old enough to converse'
     

@@ -7,6 +7,8 @@ import numpy as np
 from PIL import Image
 from tqdm import tqdm
 import pandas as pd
+import random
+
 import decord
 decord.bridge.set_bridge('torch')
 
@@ -30,116 +32,70 @@ data format:
     'frames': ['/path/to/frame0', '/path/to/frame1', '/path/to/frame2', '/path/to/frame3', '/path/to/frame4', '/path/to/frame5', '/path/to/frame6', '/path/to/frame7'],
     'conversations': [
         {'from': 'human', 'value': '<image>\nDescribe what is happening in the video.'},
-        {'from': 'gpt', 'value': 'Aerial shot winter forest'}
+        {'from': 'gpt', 'value': '<caption>'}
     ]
 }
 '''
-# webvid_metadata = []
-# with open('webvid_50k.json', 'r') as fp:
-#     webvid_metadata = json.load(fp)
-# print(f"metadata loaded: {len(webvid_metadata)}")
+
+webvid_metadata = []
+with open('webvid_50k.json', 'r') as fp:
+    webvid_metadata = json.load(fp)
+print(f"metadata loaded: {len(webvid_metadata)}")
+
+
+### CREATING THE TRAIN/VAL SPLIT
+# NUM_VAL = 5000
+# print(len(webvid_metadata))
+
+# webvid_train_subset = webvid_metadata[:-NUM_VAL]
+# webvid_val_subset = webvid_metadata[-NUM_VAL:]
+# print(len(webvid_train_subset), len(webvid_val_subset) )
+# print('total:', len(webvid_train_subset)+len(webvid_val_subset))
+
+# with open('webvid_train_45k.json', 'w') as outfile:
+#     json.dump(webvid_train_subset, outfile, indent=2)
+
+# with open('webvid_val_5k.json', 'w') as outfile:
+#     json.dump(webvid_val_subset, outfile, indent=2)
 
 if __name__=="__main__":
-    # to debug why checkpoint not getting saved...
-    data = [{
-        "id": "10006322",
-        "frames": [
-        "10006322/0000.png",
-        "10006322/0001.png",
-        "10006322/0002.png",
-        "10006322/0003.png",
-        "10006322/0004.png",
-        "10006322/0005.png",
-        "10006322/0006.png",
-        "10006322/0007.png"
-        ],
-        "conversations": [
-        {
-            "from": "human",
-            "value": "<image>\nDescribe what is happening in the video."
-        },
-        {
-            "from": "gpt",
-            "value": "Business middle aged woman smiles - night city (night urban street with cars) river - lamps and headlights - blurred"
-        }
-        ]
-        },
-        {
-        "id": "1409287",
-        "frames": [
-        "1409287/0000.png",
-        "1409287/0001.png",
-        "1409287/0002.png",
-        "1409287/0003.png",
-        "1409287/0004.png",
-        "1409287/0005.png",
-        "1409287/0006.png",
-        "1409287/0007.png"
-        ],
-        "conversations": [
-        {
-            "from": "human",
-            "value": "<image>\nDescribe what is happening in the video."
-        },
-        {
-            "from": "gpt",
-            "value": "Euros dolly shot isolated on white."
-        }
-        ]
-    },
-    {
-        "id": "11238242",
-        "frames": [
-        "11238242/0000.png",
-        "11238242/0001.png",
-        "11238242/0002.png",
-        "11238242/0003.png",
-        "11238242/0004.png",
-        "11238242/0005.png",
-        "11238242/0006.png",
-        "11238242/0007.png"
-        ],
-        "conversations": [
-        {
-            "from": "human",
-            "value": "<image>\nDescribe what is happening in the video."
-        },
-        {
-            "from": "gpt",
-            "value": "Fresh juicy beef meat hamburger with dry pepper plate over tablecloth with cutlery 1920x1080 intro motion slow hidef hd"
-        }
-        ]
-    },
-    {
-        "id": "1007725081",
-        "frames": [
-        "1007725081/0000.png",
-        "1007725081/0001.png",
-        "1007725081/0002.png",
-        "1007725081/0003.png",
-        "1007725081/0004.png",
-        "1007725081/0005.png",
-        "1007725081/0006.png",
-        "1007725081/0007.png"
-        ],
-        "conversations": [
-        {
-            "from": "human",
-            "value": "<image>\nDescribe what is happening in the video."
-        },
-        {
-            "from": "gpt",
-            "value": "Prague, czech republic - september 24, 2017: chinese tourists people walking in city. prague castle and metropolitan cathedral of st vitus, wenceslaus and adalbert on background. unesco world heritage"
-        }
-        ]
-    }]
+    ## DIVERSIFY PROMPTS IN THE WEBVID DATASET
+    with open('prompt_list.txt', 'r') as fp:
+        prompts = fp.readlines()
 
-    with open('single_datapoint.json', 'w') as outfile:
-        json.dump(data, outfile, indent=2)
+    with open('webvid_train_45k.json', 'r') as fp:
+        webvid_train_45k = json.load(fp)
+
+    webvid_train_45k_diff_prompts = []
+    for train_datapoint in tqdm(webvid_train_45k):
+        # \u2019 == ', \u201c = ", \u201d = "
+        prompt = random.choice(prompts).strip().replace(u"\u2019", "'").replace(u"\u201c", "'").replace(u"\u201d", "'")
+        new_datapoint = train_datapoint
+        new_datapoint["conversations"][0]["value"] = f"<image>\n{prompt}"
+        webvid_train_45k_diff_prompts.append(new_datapoint)
+    
+
+    with open('webvid_train_45k_diff_prompts.json', 'w') as outfile:
+        json.dump(webvid_train_45k_diff_prompts, outfile, indent=2)
+
+    with open('webvid_val_5k.json', 'r') as fp:
+        webvid_val_5k = json.load(fp)
+
+    webvid_val_5k_diff_prompts = []
+    for val_datapoint in tqdm(webvid_val_5k):
+        prompt = random.choice(prompts).strip().replace(u"\u2019", "'").replace(u"\u201c", "'").replace(u"\u201d", "'")
+        new_datapoint = val_datapoint
+        new_datapoint["conversations"][0]["value"] = f"<image>\n{prompt}"
+        webvid_val_5k_diff_prompts.append(new_datapoint)
+
+    with open('webvid_val_5k_diff_prompts.json', 'w') as outfile:
+        json.dump(webvid_val_5k_diff_prompts, outfile, indent=2)
+    
+
+        
 
 
-
-
+    ### PREPROCESS WEBVID 50K SUBSET ###########################################
     # frames = sample_frames_from_video_path("/simurgh/u/zanedurante/webvid/webvid/videos/0007/4541360.mp4")
     # import pdb; pdb.set_trace()
 

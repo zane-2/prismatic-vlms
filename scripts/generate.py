@@ -26,7 +26,6 @@ from prismatic.overwatch import initialize_overwatch
 # Initialize Overwatch =>> Wraps `logging.Logger`
 overwatch = initialize_overwatch(__name__)
 
-
 # Default Image URL (snowy trees)
 # DEFAULT_IMAGE_URL = (
 #     "scripts/trees.png"
@@ -40,7 +39,9 @@ frames_path = "10006322"
 class GenerateConfig:
     # fmt: off
     model_path: Union[str, Path] = (                                    # Path to Pretrained VLM (on disk or HF Hub)
-        "prism-clip+7b"
+        "runs/webvid+prism-clip+7b-webvid-train-45k-diff-prompts-frames=4-gpus=4-epochs=2-002+stage-finetune+x7/checkpoints/step-022956-epoch-01-loss=2.1013.pt"
+        
+        # "prism-clip+7b"
         # "prism-phi-instruct-3+4b+clip" # "phi-2+3b" # "prism-dinosiglip+7b"
     )
 
@@ -140,7 +141,7 @@ def generate(cfg: GenerateConfig) -> None:
 
                     # Generate from the VLM
                     generated_text = vlm.generate(
-                        image[0],
+                        image[:4],
                         prompt_text,
                         do_sample=cfg.do_sample,
                         temperature=cfg.temperature,

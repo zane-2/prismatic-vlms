@@ -153,3 +153,12 @@ webvid/
 
 # dataset
 *.json
+
+# video files
+*.mp4
+
+# prompt text file
+prompt_list.txt
+
+# video frames from the val set
+finetuned_webvid_45k_eval_50_video_frames/
