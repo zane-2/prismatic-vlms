@@ -263,7 +263,7 @@ def eval_finetuned_prismatic_models(model_path, webvid_val_path, save_path, samp
 
             grid.save(os.path.join(save_eval_images, f"{video_id}.png"))
 
-
+        import pdb; pdb.set_trace()
         prompt_text = f"Input: {prompt}\nOutput: "
         generated_text = vlm.generate(
                             frames_pil,
@@ -280,6 +280,7 @@ def eval_finetuned_prismatic_models(model_path, webvid_val_path, save_path, samp
             }
         ]
         
+        import pdb; pdb.set_trace()
         prompt_text = f"Input: {DEFAULT_PROMPT}\nOutput: "
         generated_text = vlm.generate(
                             frames_pil,
@@ -298,14 +299,9 @@ def eval_finetuned_prismatic_models(model_path, webvid_val_path, save_path, samp
         )
 
         eval_metadata.append(metadata)
-
     
     with open(save_path, 'w') as outfile:
         json.dump(eval_metadata, outfile, indent=2)
-
-        
-
-
 
 
 

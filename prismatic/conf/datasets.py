@@ -64,17 +64,13 @@ class WebVid(DatasetConfig):
     dataset_id: str = "webvid"
 
     align_stage_components: Tuple[Path, Path] = (
-        Path("/vision/u/silsingh/prismatic-vlms/webvid_train_45k_diff_prompts.json"),
+        Path("/vision/u/silsingh/prismatic-vlms/webvid_train_30k_qna.json"),
         Path("/vision/u/silsingh/prismatic-vlms/webvid")
-        # Path("/home/v-zadurante/code/augmenting_videos/datasets/webvid/webvid10m_train.jsonl"),
-        # Path("/home/v-zadurante/code/augmenting_videos/datasets/webvid/frames")
     )
 
     finetune_stage_components: Tuple[Path, Path] = (
-        Path("/vision/u/silsingh/prismatic-vlms/webvid_train_45k_diff_prompts.json"),
+        Path("/vision/u/silsingh/prismatic-vlms/webvid_train_30k_qna.json"),
         Path("/vision/u/silsingh/prismatic-vlms/webvid")
-        # Path("/home/v-zadurante/code/augmenting_videos/datasets/webvid/webvid10m_train.jsonl"),
-        # Path("/home/v-zadurante/code/augmenting_videos/datasets/webvid/frames")
     )
 
     dataset_root_dir: Path = Path("/vision/u/silsingh/prismatic-vlms/webvid")
@@ -85,12 +81,12 @@ class WebVid_Val(DatasetConfig):
     dataset_id: str = "webvid_val"
 
     finetune_stage_components: Tuple[Path, Path] = (
-        Path("/vision/u/silsingh/prismatic-vlms/webvid_val_5k_diff_prompts.json"),
+        Path("/vision/u/silsingh/prismatic-vlms/webvid_val_3k_qna.json"),
         Path("/vision/u/silsingh/prismatic-vlms/webvid")
     )
 
     align_stage_components: Tuple[Path, Path] = (
-        Path("/vision/u/silsingh/prismatic-vlms/webvid_val_5k_diff_prompts.json"),
+        Path("/vision/u/silsingh/prismatic-vlms/webvid_val_3k_qna.json"),
         Path("/vision/u/silsingh/prismatic-vlms/webvid")
     )
 
