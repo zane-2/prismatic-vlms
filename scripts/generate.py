@@ -84,7 +84,7 @@ def generate(cfg: GenerateConfig) -> None:
     prompt_builder = vlm.get_prompt_builder()
     system_prompt = prompt_builder.system_prompt
 
-    # REPL Welcome Message
+    # REPL Welcome Message 
     print(
         "[*] Dropping into Prismatic VLM REPL with Default Generation Setup => Initial Conditions:\n"
         f"       => Prompt Template:\n\n{prompt_builder.get_potential_prompt('<INSERT PROMPT HERE>')}\n\n"

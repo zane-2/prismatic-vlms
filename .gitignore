@@ -161,4 +161,5 @@ webvid/
 *.txt
 
 # video frames from the val set
+evals
 finetuned_webvid_45k_eval_50_video_frames/

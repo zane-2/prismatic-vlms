@@ -28,10 +28,17 @@ import cv2
 overwatch = initialize_overwatch(__name__)
 
 ## this path has a list of frames for the video
-# frames_path = '../NExT-OE/4924794333'
+## frames_path = '../NExT-OE/4924794333'
 
 import decord
 decord.bridge.set_bridge('torch')
+import re
+
+# return yes/no if there is a counting pattern in the generated text (for e.g., 1. 2. 3. ..) 
+def is_counting_pattern(gen_text):
+    pattern = r'\b\d+\.\s' # r'\b\d+[\.:]\s' # r'\b\d+[\.,]?\b'
+    matches = re.findall(pattern, gen_text)
+    return len(matches) > 0
 
 
 def sample_frames_from_video_path(video_path, num_frames=32):
@@ -225,6 +232,60 @@ def evaluate_zero_shot(model_path='prism-dinosiglip+7b'):
         json.dump(vlm_answers, outfile, indent=2)
 
 
+def eval_finetuned_prismatic_models_nextoe():
+    cfg = GenerateConfig()
+    cfg.model_path = 'runs/webvid+prism-clip+7b-webvid-train-45k-diff-prompts-k=2-frames=4-gpus=4-epochs=2-008+stage-finetune+x7/checkpoints/step-022956-epoch-02-loss=2.0671.pt'
+    
+    vlm = set_up_prismatic_vlm(cfg)
+    
+    # evaluating on the NEXT-OE dataset
+    NUM_FRAMES = 4
+    RAW_VIDEO_FILES_PATH = '/vision/u/silsingh/NExT-QA/NExTVideo_test_videos'
+    TEST_CSV_FILE_PATH = '/vision/u/silsingh/NExT-OE/test_data_nextoe/test.csv'
+
+    vlm_answers = defaultdict(dict)
+
+    # answers["video_id"] = {"qid": "vlm generated answer"}
+    with open(TEST_CSV_FILE_PATH, 'r') as fp:
+        csv_reader = csv.reader(fp)
+
+        for i, row in tqdm(enumerate(csv_reader)):
+            if i > 0:
+                video_id = row[1]
+                question = row[5]
+                qid = row[7]
+                qtype = row[8]
+
+                video_path = os.path.join(RAW_VIDEO_FILES_PATH, f"{video_id}.mp4")
+                assert os.path.exists(video_path), f"{video_path} does not exist!"
+            
+                vid_frames = sample_frames_from_video_path(video_path, NUM_FRAMES)
+                vid_frames = vid_frames.permute(0,3,1,2)   # .cpu()
+
+                image = [torchvision.transforms.functional.to_pil_image(vid_frames[i]) for i in range(NUM_FRAMES)]
+                
+                # building the prompts for vlm
+                prompt_text = f"In: {question}\nOut: "
+
+                # import pdb; pdb.set_trace()
+                generated_text = vlm.generate(
+                                    image,
+                                    prompt_text,
+                                    do_sample=cfg.do_sample,
+                                    temperature=cfg.temperature,
+                                    max_new_tokens=cfg.max_new_tokens,
+                                    min_length=cfg.min_length,
+                                )
+                                
+                vlm_answers[video_id][qid] = generated_text
+
+
+    SAVE_PATH = f"../NExT-OE/results/webvid-train-45k-diff-prompts-k=2-frames=4.json"
+    with open(SAVE_PATH, 'w') as outfile:
+        json.dump(vlm_answers, outfile, indent=2)
+
+
+
 def eval_finetuned_prismatic_models(model_path, webvid_val_path, save_path, sample_size=50, num_frames=4, save_eval_images=None):
     cfg = GenerateConfig()
     cfg.model_path = model_path
@@ -306,12 +367,33 @@ def eval_finetuned_prismatic_models(model_path, webvid_val_path, save_path, samp
 
 
 if __name__ == "__main__":
+    ###### FIND COUNTING PATTERNS IN THE GENERATED TEXTS  ###########
+    # output_path = "../NExT-OE/results/webvid-train-45k-diff-prompts-frames=4.json"   
+    # with open(output_path, 'r') as fp:
+    #     model_outputs = json.load(fp)
+
+    # counting_present = 0
+    # total = 0
+    # video_ids = []
+    # for video_id, outputs in tqdm(model_outputs.items()):
+    #     for qid, gen_text in outputs.items():
+    #         total += 1
+    #         if is_counting_pattern(gen_text):
+    #             counting_present += 1
+    #             video_ids.append((video_id,qid))
+        
+    # print(video_ids)
+    # print(f"Counting present: {counting_present}/{total}.")
+
+
     ########## EVALUATION OF FINETUNED MODELS #############
-    model_path = "runs/webvid+prism-clip+7b-webvid-train-45k-frames=4-gpus=4-epochs=2-001+stage-finetune+x7/checkpoints/step-022956-epoch-01-loss=2.0254.pt" # "webvid+prism-clip+7b-webvid-train-45k-diff-prompts-frames=4-gpus=4-epochs=2-002+stage-finetune+x7/checkpoints/step-022956-epoch-01-loss=2.1013.pt"
-    webvid_val_path = "webvid_val_5k_diff_prompts.json"
-    save_path = "eval_webvid_45k_single_prompt.json"
-    # save_eval_images = "finteuned_webvid_45k_eval_50_video_frames"
-    eval_finetuned_prismatic_models(model_path, webvid_val_path, save_path)
+    eval_finetuned_prismatic_models_nextoe()
+
+    # model_path = "runs/webvid+prism-clip+7b-webvid-train-45k-frames=4-gpus=4-epochs=2-001+stage-finetune+x7/checkpoints/step-022956-epoch-01-loss=2.0254.pt" # "webvid+prism-clip+7b-webvid-train-45k-diff-prompts-frames=4-gpus=4-epochs=2-002+stage-finetune+x7/checkpoints/step-022956-epoch-01-loss=2.1013.pt"
+    # webvid_val_path = "webvid_val_5k_diff_prompts.json"
+    # save_path = "eval_webvid_45k_single_prompt.json"
+    # # save_eval_images = "finteuned_webvid_45k_eval_50_video_frames"
+    # eval_finetuned_prismatic_models(model_path, webvid_val_path, save_path)
 
 
     # model_path = 'prism-dinosiglip+7b'

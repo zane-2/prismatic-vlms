@@ -91,9 +91,12 @@ class PretrainConfig:
     def __post_init__(self) -> None:
         # init_from_model = 'prism-clip+7b' # "phi-instruct-3+4b+clip" | 'phi-2+3b' | 'prism-dinosiglip+7b' | 'prism-clip+7b'
         self.checkpoint_pt = None
-        if self.model.init_from_model is not None:
+        if self.model.init_from_model.endswith("pt"):
+            self.checkpoint_pt = self.model.init_from_model
+        elif self.model.init_from_model is not None:
             # model.repo_id -> "RylanSchaeffer/prismatic-vlms" | "TRI-ML/prismatic-vlms"
             self.checkpoint_pt = hf_hub_download(repo_id=self.model.repo_id, filename=f"{self.model.init_from_model}/checkpoints/latest-checkpoint.pt")
+
         
         """Set optimization parameters based on `stage` in {"align", "finetune"}."""
         if self.stage == "align":
@@ -215,8 +218,8 @@ def pretrain(cfg: PretrainConfig) -> None:
     #     filepath = f"webvid/10006322/{str(i).zfill(4)}.png"
     #     image.append(Image.open(filepath).convert("RGB"))
     # # prompt_text = "<image>\nDescribe what is happening in the video."
-    # prompt_text = "Input: What is going on in the image?\nOutput:"  # Input: <prompt>\nOutput:
-    # image = image[:7]
+    # prompt_text = "Input: What is going on in the image?\nOutput: "  # Input: <prompt>\nOutput:
+    # image = image[:1]
     # generated_text = vlm.generate(
     #                     image,
     #                     prompt_text,
