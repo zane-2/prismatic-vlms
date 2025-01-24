@@ -64,16 +64,16 @@ class WebVid(DatasetConfig):
     dataset_id: str = "webvid"
 
     align_stage_components: Tuple[Path, Path] = (
-        Path("/home/v-zadurante/code/augmenting_videos/datasets/webvid/webvid10m_train.jsonl"),
-        Path("/home/v-zadurante/code/augmenting_videos/datasets/webvid/frames")
+        Path("/vision/u/silsingh/prismatic-vlms/webvid_train_30k_qna.json"),
+        Path("/vision/u/silsingh/prismatic-vlms/webvid")
     )
 
     finetune_stage_components: Tuple[Path, Path] = (
-        Path("/home/v-zadurante/code/augmenting_videos/datasets/webvid/webvid10m_train.jsonl"),
-        Path("/home/v-zadurante/code/augmenting_videos/datasets/webvid/frames")
+        Path("/vision/u/silsingh/prismatic-vlms/webvid_train_30k_qna.json"),
+        Path("/vision/u/silsingh/prismatic-vlms/webvid")
     )
 
-    dataset_root_dir: Path = Path("/home/v-zadurante/code/augmenting_videos/datasets/webvid")
+    dataset_root_dir: Path = Path("/vision/u/silsingh/prismatic-vlms/webvid")
 
 
 @dataclass
@@ -81,16 +81,16 @@ class WebVid_Val(DatasetConfig):
     dataset_id: str = "webvid_val"
 
     finetune_stage_components: Tuple[Path, Path] = (
-        Path("/home/v-zadurante/code/augmenting_videos/datasets/webvid/webvid10m_val.jsonl"),
-        Path("/home/v-zadurante/code/augmenting_videos/datasets/webvid/frames")
+        Path("/vision/u/silsingh/prismatic-vlms/webvid_val_3k_qna.json"),
+        Path("/vision/u/silsingh/prismatic-vlms/webvid")
     )
 
     align_stage_components: Tuple[Path, Path] = (
-        Path("/home/v-zadurante/code/augmenting_videos/datasets/webvid/webvid10m_val.jsonl"),
-        Path("/home/v-zadurante/code/augmenting_videos/datasets/webvid/frames")
+        Path("/vision/u/silsingh/prismatic-vlms/webvid_val_3k_qna.json"),
+        Path("/vision/u/silsingh/prismatic-vlms/webvid")
     )
 
-    dataset_root_dir: Path = Path("/home/v-zadurante/code/augmenting_videos/datasets/webvid")
+    dataset_root_dir: Path = Path("/vision/u/silsingh/prismatic-vlms/webvid")
 
 
 # [Multimodal-Only] LLava-v15 WITHOUT the Language-Only ShareGPT Data (No Co-Training)

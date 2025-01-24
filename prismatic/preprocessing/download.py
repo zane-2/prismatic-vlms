@@ -51,21 +51,21 @@ DATASET_REGISTRY: Dict[str, List[DatasetComponent]] = {
     ],
 
     "llava-v1.5-instruct": [
-        {
-            "name": "llava_v1_5_mix665k.json",
-            "extract": False,
-            "url": (
-                "https://huggingface.co/datasets/liuhaotian/LLaVA-Instruct-150K/resolve/main/llava_v1_5_mix665k.json"
-            ),
-            "do_rename": True,
-        },
-        {
-            "name": "coco/train2017",       # Visual Instruct Tuning images are all sourced from COCO Train 2017
-            "extract": True,
-            "extract_type": "directory",
-            "url": "http://images.cocodataset.org/zips/train2017.zip",
-            "do_rename": True,
-        },
+        # { TODO uncomment these lines later!
+        #     "name": "llava_v1_5_mix665k.json",
+        #     "extract": False,
+        #     "url": (
+        #         "https://huggingface.co/datasets/liuhaotian/LLaVA-Instruct-150K/resolve/main/llava_v1_5_mix665k.json"
+        #     ),
+        #     "do_rename": True,
+        # },
+        # {
+        #     "name": "coco/train2017",       # Visual Instruct Tuning images are all sourced from COCO Train 2017
+        #     "extract": True,
+        #     "extract_type": "directory",
+        #     "url": "http://images.cocodataset.org/zips/train2017.zip",
+        #     "do_rename": True,
+        # },
         {
             "name": "gqa/images",
             "extract": True,

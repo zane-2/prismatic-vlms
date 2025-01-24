@@ -56,7 +56,7 @@ VISION_BACKBONES = {
     "dinosiglip-vit-so-384px": {"cls": DinoSigLIPViTBackbone, "kwargs": {"default_image_size": 384}},
 
     # === Video-based Backbones ===
-    "video-clip-vit-b": {"cls": VideoCLIPViTBackbone, "kwargs": {"default_image_size": 224, "num_frames":8}},
+    "video-clip-vit-b": {"cls": VideoCLIPViTBackbone, "kwargs": {"default_image_size": 224, "num_frames": 8}},
     "video-clip-vit-l": {"cls": VideoCLIPViTBackbone, "kwargs": {"default_image_size": 224, "num_frames": 8}},
     "video-clip-vit-l-336px": {"cls": VideoCLIPViTBackbone, "kwargs": {"default_image_size": 336, "num_frames": 8}},
 }
@@ -98,11 +98,12 @@ LLM_BACKBONES = {
 
 
 def get_vision_backbone_and_transform(
-    vision_backbone_id: str, image_resize_strategy: str
+    vision_backbone_id: str, image_resize_strategy: str, num_frames: int
 ) -> Tuple[VisionBackbone, ImageTransform]:
     """Instantiate a Vision Backbone, returning both the nn.Module wrapper class and default Image Transform."""
     if vision_backbone_id in VISION_BACKBONES:
         vision_cfg = VISION_BACKBONES[vision_backbone_id]
+        vision_cfg["kwargs"]["num_frames"] = num_frames
         vision_backbone: VisionBackbone = vision_cfg["cls"](
             vision_backbone_id, image_resize_strategy, **vision_cfg["kwargs"]
         )

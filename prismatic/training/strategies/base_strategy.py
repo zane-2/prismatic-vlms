@@ -287,8 +287,10 @@ class TrainingStrategy(ABC):
                                 )
                                 loss = output.loss
                                 val_losses.append(loss.item())
-                        
-                    wandb.log({"val_loss": sum(val_losses) / len(val_losses)})
+                    
+                    if overwatch.is_rank_zero():
+                        overwatch.info(f'Validation loss: {sum(val_losses) / len(val_losses)}')
+                        wandb.log({"val_loss": sum(val_losses) / len(val_losses)})
                     
                 
             # Save checkpoint at end each epoch (if `self.max_steps` is None)

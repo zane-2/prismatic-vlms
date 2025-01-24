@@ -260,7 +260,7 @@ class FinetuneDataset(Dataset[Dict[str, torch.Tensor]]):
             return dict(pixel_values=pixel_values, input_ids=input_ids, labels=labels)
         # === Handle multi-image (video) inputs ===
         if "frames" in self.examples[idx]:
-            image_paths = [Path(image_path) for image_path in self.examples[idx]["frames"]]
+            image_paths = [Path(image_path) for image_path in self.examples[idx]["frames"]][:4]  # TODO hardcoding frames for now, add a flag for num_frames!
 
             if self.shuffle_frames:
                 random.shuffle(image_paths)
@@ -281,9 +281,7 @@ class FinetuneDataset(Dataset[Dict[str, torch.Tensor]]):
             # stack the pixel values to change from list of [3, 224, 224] to [num_frames, 3, 224, 224]
             pixel_values = torch.stack(pixel_values, dim=0).to(pixel_values[0].device) # stack and put to device of first tensor
             
-
             return dict(pixel_values=pixel_values, input_ids=input_ids, labels=labels)
-
 
         else:
             # No image --> return `pixel_values` = None; Collator will do the smart batch handling for us!

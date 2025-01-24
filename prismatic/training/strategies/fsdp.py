@@ -133,6 +133,11 @@ class FSDPStrategy(TrainingStrategy):
         # Iteratively Assemble FSDP Wrapping Policy by fetching the wrapping policies for each backbone/constituent
         vlm_fsdp_wrapping_policy = self.vlm.get_fsdp_wrapping_policy()
 
+        # print(self.enable_mixed_precision_training)
+        # print(self.mixed_precision_dtype)
+        # print(self.reduce_in_full_precision)
+        # print(self.vlm.vision_backbone.dtype)
+        # import pdb; pdb.set_trace()
         # Assemble the Default FSDP Mixed Precision Policy
         if self.enable_mixed_precision_training and self.mixed_precision_dtype == torch.bfloat16:
             # MixedPrecision `param_dtype` specifies *compute* dtype (for forward/backward only)
@@ -142,9 +147,10 @@ class FSDPStrategy(TrainingStrategy):
                 param_dtype=torch.bfloat16, reduce_dtype=reduce_buffer_dtype, buffer_dtype=reduce_buffer_dtype
             )
 
-            # When running FSDP with a frozen vision backbone --> move to half precision!
+            # When running FSDP with a frozen vision backbone --> move to half precision! ((https://github.com/TRI-ML/prismatic-vlms/issues/33))
             overwatch.info("Casting Vision Backbone to *Half Precision* via `.to(dtype=...)`")
             self.vlm.vision_backbone.to(dtype=self.vlm.vision_backbone.half_precision_dtype)
+            # print(self.vlm.vision_backbone.dtype)
 
         else:
             # If we're not using mixed precision, everything is in default full precision!

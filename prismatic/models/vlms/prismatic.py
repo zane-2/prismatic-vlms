@@ -101,6 +101,7 @@ class PrismaticVLM(VLM):
         )
 
         # Load from Checkpoint (Custom --> should load both *projector* and *llm* weights)
+        # import pdb; pdb.set_trace()
         model_state_dict = torch.load(pretrained_checkpoint, map_location="cpu")["model"]
         assert (
             "projector" in model_state_dict and "llm_backbone" in model_state_dict
@@ -289,7 +290,12 @@ class PrismaticVLM(VLM):
         # Handle Multimodal Indices is None --> pretend like the batch is fully multimodal (always image + text)!
         if multimodal_indices is None:
             multimodal_indices = torch.arange(len(input_ids), dtype=torch.long, device=input_ids.device)
-            multimodal_indices.to(pixel_values.device)
+            # print(multimodal_indices.dtype)  # int64
+            if type(pixel_values) == dict:
+                multimodal_indices.to(pixel_values[next(iter(pixel_values))].device)
+            else: multimodal_indices.to(pixel_values.device)  # [TODO] ERROR: dict object has no attribute device
+            # import pdb; pdb.set_trace()
+            
 
         # Handle Multimodal Indices is Empty (len == 0) --> simple unimodal forward
         elif len(multimodal_indices) == 0:

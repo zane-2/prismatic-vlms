@@ -7,7 +7,6 @@
 #  --model.finetune_per_device_batch_size 1 
 #"gemma-2b-instruct" \
 
-# TODO: Add the number of frames as a configurable parameter
 torchrun --standalone --nnodes 1 --nproc-per-node 1 scripts/pretrain.py \
   --model.type "one-stage+7b" \
   --model.model_id "testing" \

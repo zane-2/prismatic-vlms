@@ -1,0 +1,94 @@
+[
+  {
+    "id": "10006322",
+    "frames": [
+      "10006322/0000.png",
+      "10006322/0001.png",
+      "10006322/0002.png",
+      "10006322/0003.png",
+      "10006322/0004.png",
+      "10006322/0005.png",
+      "10006322/0006.png",
+      "10006322/0007.png"
+    ],
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nDescribe what is happening in the video."
+      },
+      {
+        "from": "gpt",
+        "value": "Business middle aged woman smiles - night city (night urban street with cars) river - lamps and headlights - blurred"
+      }
+    ]
+  },
+  {
+    "id": "1409287",
+    "frames": [
+      "1409287/0000.png",
+      "1409287/0001.png",
+      "1409287/0002.png",
+      "1409287/0003.png",
+      "1409287/0004.png",
+      "1409287/0005.png",
+      "1409287/0006.png",
+      "1409287/0007.png"
+    ],
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nDescribe what is happening in the video."
+      },
+      {
+        "from": "gpt",
+        "value": "Euros dolly shot isolated on white."
+      }
+    ]
+  },
+  {
+    "id": "11238242",
+    "frames": [
+      "11238242/0000.png",
+      "11238242/0001.png",
+      "11238242/0002.png",
+      "11238242/0003.png",
+      "11238242/0004.png",
+      "11238242/0005.png",
+      "11238242/0006.png",
+      "11238242/0007.png"
+    ],
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nDescribe what is happening in the video."
+      },
+      {
+        "from": "gpt",
+        "value": "Fresh juicy beef meat hamburger with dry pepper plate over tablecloth with cutlery 1920x1080 intro motion slow hidef hd"
+      }
+    ]
+  },
+  {
+    "id": "1007725081",
+    "frames": [
+      "1007725081/0000.png",
+      "1007725081/0001.png",
+      "1007725081/0002.png",
+      "1007725081/0003.png",
+      "1007725081/0004.png",
+      "1007725081/0005.png",
+      "1007725081/0006.png",
+      "1007725081/0007.png"
+    ],
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nDescribe what is happening in the video."
+      },
+      {
+        "from": "gpt",
+        "value": "Prague, czech republic - september 24, 2017: chinese tourists people walking in city. prague castle and metropolitan cathedral of st vitus, wenceslaus and adalbert on background. unesco world heritage"
+      }
+    ]
+  }
+]

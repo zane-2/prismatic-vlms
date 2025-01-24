@@ -147,3 +147,18 @@ dmypy.json
 # Caches and Datasets
 cache/
 data/
+checkpoints/
+runs/
+webvid/
+
+# dataset
+*.json
+
+# video files
+*.mp4
+
+# text files
+*.txt
+
+# video frames from the val set
+finetuned_webvid_45k_eval_50_video_frames/

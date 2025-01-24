@@ -34,7 +34,7 @@ class CLIPViTBackbone(TimmViTBackbone):
 
 
 class VideoCLIPViTBackbone(CLIPViTBackbone):
-    def __init__(self, vision_backbone_id: str, image_resize_strategy: str, default_image_size: int = 224, num_frames: int = 1) -> None:
+    def __init__(self, vision_backbone_id: str, image_resize_strategy: str, default_image_size: int = 224, num_frames: int = 8) -> None:
         super().__init__(vision_backbone_id, image_resize_strategy, default_image_size=default_image_size)
         self.num_frames = num_frames
     
@@ -42,6 +42,7 @@ class VideoCLIPViTBackbone(CLIPViTBackbone):
         # Reshape the input tensor to transform from (B, T, C, H, W) to (B * T, C, H, W)
 
         assert x.shape[1] == self.num_frames, f"Expected input tensor to have {self.num_frames} frames in the second dimension, but got {x.shape[1]} frames instead.  Total shape was: {x.shape}"
+        # self.eval()  # Disable dropout and other stochastic layers to compare embeddings
 
         #output_embed_first_frame = super().forward(x[:, 0])
         #output_embed_first_frame_2 = super().forward(x[:, 0])

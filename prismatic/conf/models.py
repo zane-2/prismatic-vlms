@@ -29,7 +29,7 @@ class ModelConfig(ChoiceRegistry):
     # Backbone Parameters
     image_resize_strategy: str                              # Resizing strategy in < crop | letterbox | corner-pad >
     llm_max_length: int                                     # Maximum context length for LLM (can be < than max!)
-
+    
     # === Multi-Stage Optimization Hyperparameters ===
     # By default, we assume an AdamW optimizer with FSDP (Gradient Sharding or Full Sharding depending on stage)
 
@@ -70,6 +70,9 @@ class ModelConfig(ChoiceRegistry):
     enable_mixed_precision_training: bool = True            # Whether to enable mixed precision training
     reduce_in_full_precision: bool = False                  # Whether to run gradient reduction in FP32
 
+    num_frames: int = 8                                     # Number of frames as input to VideoCLIP-VIT (use this flag for training on videos!)
+    init_from_model: str = None                             # (prismatic) checkpoint to load (specify by model_id -> for e.g., prism-clip+7b) 
+    repo_id: str = None                                     # which hf repo to download the pretrained checkpoint from? (one of "RylanSchaeffer/prismatic-vlms", "TRI-ML/prismatic-vlms")
     # fmt: on
 
 
