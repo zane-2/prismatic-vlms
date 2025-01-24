@@ -185,6 +185,8 @@ class TrainingStrategy(ABC):
             self.epochs = 100
 
         # === Train ===
+        # print('self.max_steps = ', self.max_steps, 'metrics.global_step = ', metrics.global_step)
+        # import pdb; pdb.set_trace()
         status = metrics.get_status()
         with tqdm(
             total=(
@@ -257,20 +259,22 @@ class TrainingStrategy(ABC):
 
                         # Check for Termination & Save Final Checkpoint (in case `max_steps` is not None)
                         if self.max_steps is not None and metrics.global_step >= self.max_steps:
-                            self.save_checkpoint(metrics.run_dir, metrics.global_step, epoch, loss.item())
                             dist.barrier()
+                            self.save_checkpoint(metrics.run_dir, metrics.global_step, epoch, loss.item())
 
                             return
 
                         # Update Progress Bar
                         progress.update()
                         progress.set_description(status)
+
                 # Do validation
+                # dist.barrier()
                 if val_dataset is not None:
                     self.vlm.eval()
                     val_losses = []
                     #import pdb; pdb.set_trace()
-                    print("Validating model..")
+                    overwatch.info("Validating model..")
                     for val_idx, batch in tqdm(enumerate(val_dataloader), total=len(val_dataloader)):
                         with torch.no_grad():
                             with torch.autocast(
@@ -293,7 +297,11 @@ class TrainingStrategy(ABC):
                         wandb.log({"val_loss": sum(val_losses) / len(val_losses)})
                     
                 
-            # Save checkpoint at end each epoch (if `self.max_steps` is None)
-            if self.max_steps is None:
-                self.save_checkpoint(metrics.run_dir, metrics.global_step, epoch, loss.item())
-                dist.barrier()
+                # Save checkpoint at end of each epoch (if `self.max_steps` is None)
+                if self.max_steps is None: # and overwatch.is_rank_zero()
+                    overwatch.info(f'Saving checkpoint.. epoch = {epoch+1}, loss = {loss.item()}')
+                    dist.barrier()  # to sync each process after model saving
+                    self.save_checkpoint(metrics.run_dir, metrics.global_step, epoch+1, loss.item())
+
+            # at the end of all epochs.
+            # dist.barrier()

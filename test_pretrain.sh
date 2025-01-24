@@ -23,7 +23,7 @@
 # FSDP_CPU_RAM_EFFICIENT_LOADING=1 torchrun ...
 torchrun --standalone --nnodes 1 --nproc-per-node 4 scripts/pretrain.py \
   --model.type "one-stage+7b" \
-  --model.model_id "prism-clip+7b-webvid-train-30kx4-qna-action-object-scene-temporal-frames=4-gpus=4-epochs=1-003" \
+  --model.model_id "prism-clip+7b-webvid-train-45k-diff-prompts-k=512-frames=4-gpus=4-epochs=2-009" \
   --dataset.type "webvid" \
   --model.image_resize_strategy "resize-naive" \
   --model.llm_backbone_id "llama2-7b-pure" \
@@ -34,9 +34,12 @@ torchrun --standalone --nnodes 1 --nproc-per-node 4 scripts/pretrain.py \
   --model.num_frames 4 \
   --model.init_from_model "prism-clip+7b" \
   --model.repo_id "TRI-ML/prismatic-vlms" \
-  --model.finetune_epochs 1
+  --model.finetune_epochs 2
 
-# llm backbone: "llama2-7b-pure", "phi-2-3b", "phi-3-instruct-4b"
+# prism-clip+7b-webvid-train-50kx4-qna-action-object-scene-temporal-frames=4-gpus=4-epochs=1-006, prism-clip+7b-webvid-train-45k-diff-prompts-k=2-frames=4-gpus=4-epochs=2-007
+# "prism-clip+7b", "prism-llama3-instruct+8b+clip" 
+# "RylanSchaeffer/prismatic-vlms", "TRI-ML/prismatic-vlms"
+# llm backbone: "llama2-7b-pure" (prism-clip+7b), "phi-2-3b", "phi-3-instruct-4b"  "llama2-7b-pure"  llama3-8b-instruct
 # vision_backbone_id: "dinosiglip-vit-so-384px", "clip-vit-l-336px", "video-clip-vit-l-336px"
 # arch_speifier: "no-align+fused-gelu-mlp", "no-align+gelu-mlp"
 # dataset: "llava-v15" | "video-llava-v15"
