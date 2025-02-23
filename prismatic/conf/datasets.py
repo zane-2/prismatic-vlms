@@ -64,12 +64,12 @@ class WebVid(DatasetConfig):
     dataset_id: str = "webvid"
 
     align_stage_components: Tuple[Path, Path] = (
-        Path("/vision/u/silsingh/prismatic-vlms/dataset_splits/webvid_train_45k_diff_prompts_k=512.json"),
+        Path("/vision/u/silsingh/prismatic-vlms/dataset_splits/webvid_train_45k_cluster_size=4.json"),
         Path("/vision/u/silsingh/prismatic-vlms/webvid")
     )
 
     finetune_stage_components: Tuple[Path, Path] = (
-        Path("/vision/u/silsingh/prismatic-vlms/dataset_splits/webvid_train_45k_diff_prompts_k=512.json"),
+        Path("/vision/u/silsingh/prismatic-vlms/dataset_splits/webvid_train_45k_cluster_size=4.json"),
         Path("/vision/u/silsingh/prismatic-vlms/webvid")
     )
 
