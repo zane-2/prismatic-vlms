@@ -260,7 +260,7 @@ class FinetuneDataset(Dataset[Dict[str, torch.Tensor]]):
             return dict(pixel_values=pixel_values, input_ids=input_ids, labels=labels)
         # === Handle multi-image (video) inputs ===
         if "frames" in self.examples[idx]:
-            image_paths = [Path(image_path) for image_path in self.examples[idx]["frames"]][:4]  # TODO hardcoding frames for now, add a flag for num_frames!
+            image_paths = [Path(image_path) for image_path in self.examples[idx]["frames"]]  # removed the hardcoding - as long as data split is okay, no need to do anything here!
 
             if self.shuffle_frames:
                 random.shuffle(image_paths)
