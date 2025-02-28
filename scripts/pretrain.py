@@ -77,6 +77,7 @@ class PretrainConfig:
     run_id: Optional[str] = None                                    # Run ID for logging, Weights & Biases
     run_root_dir: Path = Path("runs")                               # Path to directory to store logs & checkpoints
     seed: int = 7                                                   # Random seed (for reproducibility)
+    dry_run: bool = False                                           # set to True when dry running/debugging first pass of the model                                           
 
     # HF Hub Credentials (for any gated models)
     hf_token: Union[str, Path] = Path(".hf_token")                  # Environment variable or Path to HF Token
@@ -130,6 +131,17 @@ class PretrainConfig:
         else:
             raise ValueError(f"Stage `{self.stage}` is not supported!")
 
+
+        """rope scaling applied to increase context length"""
+        self.rope_kwargs = None
+        if self.model.rope_scaling_factor:
+            self.rope_kwargs = {
+                    "rope_scaling": {
+                        "type": "dynamic",
+                        "factor": self.model.rope_scaling_factor
+                    }
+                }
+
     # fmt: on
 
 
@@ -174,7 +186,7 @@ def pretrain(cfg: PretrainConfig) -> None:
     # Load LLM Backbone --> on CPU, in Full Precision (initializing Tokenizer + handling special tokens if necessary)
     overwatch.info(f"Loading Pretrained LLM [bold]{cfg.model.llm_backbone_id}[/] via HF Transformers")
     llm_backbone, tokenizer = get_llm_backbone_and_tokenizer(
-        cfg.model.llm_backbone_id, llm_max_length=cfg.model.llm_max_length, hf_token=hf_token
+        cfg.model.llm_backbone_id, llm_max_length=cfg.model.llm_max_length, hf_token=hf_token, rope_kwargs=cfg.rope_kwargs
     )
 
     # Create VLM => wraps `vision_backbone` and `llm`
@@ -207,28 +219,27 @@ def pretrain(cfg: PretrainConfig) -> None:
     # print(vlm.vision_backbone.dtype)  -> torch.bfloat16
     # import pdb; pdb.set_trace()
 
-    # [TODO] testing first pass of the model with video inputs..
-    # vlm.requires_grad_(False)
-    # vlm.eval()
-    # device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
-    # vlm.to(device, dtype=torch.bfloat16)
-    # vlm.eval()
-    # image = []
-    # for i in range(8):
-    #     filepath = f"webvid/10006322/{str(i).zfill(4)}.png"
-    #     image.append(Image.open(filepath).convert("RGB"))
-    # # prompt_text = "<image>\nDescribe what is happening in the video."
-    # prompt_text = "Input: What is going on in the image?\nOutput: "  # Input: <prompt>\nOutput:
-    # image = image[:1]
-    # generated_text = vlm.generate(
-    #                     image,
-    #                     prompt_text,
-    #                     do_sample=False,
-    #                     temperature=1.0,
-    #                     max_new_tokens=512,
-    #                     min_length=1
-    #                 )
-    # import pdb; pdb.set_trace()
+    # [DRY RUN] testing first pass of the model with video inputs.
+    if cfg.dry_run:
+        device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
+        vlm.to(device, dtype=torch.bfloat16)
+        vlm.eval()
+        image = []
+        for i in range(8):
+            filepath = f"./10006322/{str(i).zfill(4)}.png"
+            image.append(Image.open(filepath).convert("RGB"))
+        # prompt_text = "<image>\nDescribe what is happening in the video."
+        prompt_text = "Input: What is going on in the image?\nOutput: "  # Input: <prompt>\nOutput:
+        image = image + image
+        generated_text = vlm.generate(
+                            image,
+                            prompt_text,
+                            do_sample=False,
+                            temperature=1.0,
+                            max_new_tokens=512,
+                            min_length=1
+                        )
+        import pdb; pdb.set_trace()
 
     # [Explicit] Call to `freeze_backbones` here for clarity => will log exactly what is frozen / what's not!
     overwatch.info(f"Invoking `VLM.freeze_backbones()` for `{model_id}` => Training Stage: `{cfg.stage}`")
@@ -280,7 +291,10 @@ def pretrain(cfg: PretrainConfig) -> None:
         reduce_in_full_precision=cfg.model.reduce_in_full_precision,
         worker_init_fn=worker_init_fn,
     )
-    train_strategy.run_setup(run_dir=run_dir, n_train_examples=len(train_dataset))
+    if isinstance(train_dataset, list):
+        train_strategy.run_setup(run_dir=run_dir, n_train_examples=len(train_dataset[0]))
+    else:
+        train_strategy.run_setup(run_dir=run_dir, n_train_examples=len(train_dataset))
 
     # Create Metrics =>> Handles on the fly tracking, logging to specified trackers (e.g., JSONL, Weights & Biases)
     overwatch.info(f"Creating Metrics with Active Trackers => `{cfg.trackers}`")

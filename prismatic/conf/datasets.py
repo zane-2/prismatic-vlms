@@ -64,16 +64,16 @@ class WebVid(DatasetConfig):
     dataset_id: str = "webvid"
 
     align_stage_components: Tuple[Path, Path] = (
-        Path("/vision/u/silsingh/prismatic-vlms/dataset_splits/webvid_train_45k_diff_prompts_k=512.json"),
-        Path("/vision/u/silsingh/prismatic-vlms/webvid")
+        Path("/vision/u/silsingh/prismatic-vlms/dataset_splits/webvid_train_45k_cluster_size=4.json"),
+        Path("/vision/u/silsingh/prismatic-vlms/webvid_cluster_size=4")
     )
 
     finetune_stage_components: Tuple[Path, Path] = (
-        Path("/vision/u/silsingh/prismatic-vlms/dataset_splits/webvid_train_45k_diff_prompts_k=512.json"),
-        Path("/vision/u/silsingh/prismatic-vlms/webvid")
+        Path("/vision/u/silsingh/prismatic-vlms/dataset_splits/webvid_train_45k_cluster_size=4.json"),
+        Path("/vision/u/silsingh/prismatic-vlms/webvid_num_frames=1")
     )
 
-    dataset_root_dir: Path = Path("/vision/u/silsingh/prismatic-vlms/webvid")
+    dataset_root_dir: Path = Path("/vision/u/silsingh/prismatic-vlms")
 
 
 @dataclass
@@ -81,16 +81,16 @@ class WebVid_Val(DatasetConfig):
     dataset_id: str = "webvid_val"
 
     finetune_stage_components: Tuple[Path, Path] = (
-        Path("/vision/u/silsingh/prismatic-vlms/dataset_splits/webvid_val_5k_diff_prompts_k=512.json"),
-        Path("/vision/u/silsingh/prismatic-vlms/webvid")
+        Path("/vision/u/silsingh/prismatic-vlms/dataset_splits/webvid_val_5k_cluster_size=4.json"),
+        Path("/vision/u/silsingh/prismatic-vlms/webvid_num_frames=1")
     )
 
     align_stage_components: Tuple[Path, Path] = (
-        Path("/vision/u/silsingh/prismatic-vlms/dataset_splits/webvid_val_5k_diff_prompts_k=512.json"),
-        Path("/vision/u/silsingh/prismatic-vlms/webvid")
+        Path("/vision/u/silsingh/prismatic-vlms/dataset_splits/webvid_val_5k_cluster_size=4.json"),
+        Path("/vision/u/silsingh/prismatic-vlms/webvid_cluster_size=4")
     )
 
-    dataset_root_dir: Path = Path("/vision/u/silsingh/prismatic-vlms/webvid")
+    dataset_root_dir: Path = Path("/vision/u/silsingh/prismatic-vlms")
 
 
 # [Multimodal-Only] LLava-v15 WITHOUT the Language-Only ShareGPT Data (No Co-Training)

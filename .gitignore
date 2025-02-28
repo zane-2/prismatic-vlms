@@ -147,19 +147,21 @@ dmypy.json
 # Caches and Datasets
 cache/
 data/
+
+###################################################
+##### ignore the following when committing  #######
 checkpoints/
 runs/
-webvid/
-
-# dataset
 *.json
-
-# video files
 *.mp4
-
-# text files
+*.png
 *.txt
-
-# video frames from the val set
 evals
-finetuned_webvid_45k_eval_50_video_frames/
+10006322
+generated_qna
+webvid_enriched_captions
+webvid_num_frames=1
+webvid_num_frames=2
+webvid_num_frames=4
+webvid_num_frames=8
+webvid_num_frames=16

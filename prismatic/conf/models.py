@@ -63,6 +63,8 @@ class ModelConfig(ChoiceRegistry):
 
     finetune_train_strategy: str                            # Finetune Train Strategy (default: "fsdp-full-shard")
 
+    rope_scaling_factor: Optional[float] = None
+
     # Enable Gradient/Activation Checkpointing (for the LLM Backbone)
     enable_gradient_checkpointing: bool = True
 
