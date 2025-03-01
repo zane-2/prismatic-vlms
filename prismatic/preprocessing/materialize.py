@@ -45,14 +45,27 @@ def get_dataset_and_collator(
 
     elif stage == "finetune":
         annotation_json, image_dir = dataset_cfg.finetune_stage_components
-        dataset = dataset_cls(
-            dataset_root_dir / annotation_json,
-            dataset_root_dir / image_dir,
-            image_transform,
-            tokenizer,
-            prompt_builder_fn=prompt_builder_fn,
-        )
-        return dataset, collator
+        # different clustering jsons per epoch
+        if isinstance(annotation_json, list):
+            datasets = []
+            for annot_json in annotation_json:
+                dataset = dataset_cls(
+                    dataset_root_dir / annot_json,
+                    dataset_root_dir / image_dir,
+                    image_transform,
+                    tokenizer,
+                    prompt_builder_fn=prompt_builder_fn,
+                )
+                datasets.append(dataset)
+        else:
+            datasets = dataset_cls(
+                dataset_root_dir / annotation_json,
+                dataset_root_dir / image_dir,
+                image_transform,
+                tokenizer,
+                prompt_builder_fn=prompt_builder_fn,
+            )
+        return datasets, collator
 
     elif stage == "full-finetune":
         annotation_json, image_dir = dataset_cfg.finetune_stage_components

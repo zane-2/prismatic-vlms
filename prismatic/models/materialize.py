@@ -5,7 +5,7 @@ Factory class for initializing Vision Backbones, LLM Backbones, and VLMs from a 
 individual functions for clear control flow.
 """
 
-from typing import Optional, Tuple
+from typing import Optional, Tuple, Dict
 
 from transformers import PreTrainedTokenizerBase
 
@@ -21,6 +21,7 @@ from prismatic.models.backbones.vision import (
     CLIPViTBackbone,
     DinoCLIPViTBackbone,
     DinoSigLIPViTBackbone,
+    VideoDinoSigLIPViTBackbone,
     DinoV2ViTBackbone,
     ImageTransform,
     IN1KViTBackbone,
@@ -59,6 +60,7 @@ VISION_BACKBONES = {
     "video-clip-vit-b": {"cls": VideoCLIPViTBackbone, "kwargs": {"default_image_size": 224, "num_frames": 8}},
     "video-clip-vit-l": {"cls": VideoCLIPViTBackbone, "kwargs": {"default_image_size": 224, "num_frames": 8}},
     "video-clip-vit-l-336px": {"cls": VideoCLIPViTBackbone, "kwargs": {"default_image_size": 336, "num_frames": 8}},
+    "video-dinosiglip-vit-so-384px": {"cls": VideoDinoSigLIPViTBackbone, "kwargs": {"default_image_size": 224, "num_frames": 8}}
 }
 
 
@@ -119,6 +121,7 @@ def get_llm_backbone_and_tokenizer(
     llm_max_length: int = 2048,
     hf_token: Optional[str] = None,
     inference_mode: bool = False,
+    rope_kwargs: Optional[Dict] = None
 ) -> Tuple[LLMBackbone, PreTrainedTokenizerBase]:
     if llm_backbone_id in LLM_BACKBONES:
         llm_cfg = LLM_BACKBONES[llm_backbone_id]
@@ -127,7 +130,8 @@ def get_llm_backbone_and_tokenizer(
             llm_max_length=llm_max_length,
             hf_token=hf_token,
             inference_mode=inference_mode,
-            **llm_cfg["kwargs"],
+            rope_kwargs=rope_kwargs,
+            **llm_cfg["kwargs"]
         )
         tokenizer = llm_backbone.get_tokenizer()
         return llm_backbone, tokenizer

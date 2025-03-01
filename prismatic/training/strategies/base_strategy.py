@@ -118,16 +118,31 @@ class TrainingStrategy(ABC):
         if "finetune" in stage and batch_construction_strategy == "split-modality":
             # Instantiate the split-modality sampler; if you want to extend with other batch construction schemes,
             #   (e.g., grouping by length) =>> can easily add them here!
-            modality_lengths = dataset.get_modality_lengths()
-            sampler = SplitModalitySampler(
-                dataset,
-                modality_lengths,
-                global_batch_size=self.global_batch_size,
-                num_replicas=overwatch.world_size(),
-                rank=overwatch.rank(),
-                seed=seed,
-                drop_last=False,
-            )
+            if isinstance(dataset, list):
+                modality_lengths = dataset[0].get_modality_lengths()
+                sampler = []
+                for dset in dataset:
+                    subset_sampler = SplitModalitySampler(
+                        dset,
+                        modality_lengths,
+                        global_batch_size=self.global_batch_size,
+                        num_replicas=overwatch.world_size(),
+                        rank=overwatch.rank(),
+                        seed=seed,
+                        drop_last=False,
+                    )
+                    sampler.append(subset_sampler)
+            else:
+                modality_lengths = dataset.get_modality_lengths()
+                sampler = SplitModalitySampler(
+                    dataset,
+                    modality_lengths,
+                    global_batch_size=self.global_batch_size,
+                    num_replicas=overwatch.world_size(),
+                    rank=overwatch.rank(),
+                    seed=seed,
+                    drop_last=False,
+                )
             val_modality_lengths = val_dataset.get_modality_lengths()
             val_sampler = SplitModalitySampler(
                 val_dataset,
@@ -140,14 +155,27 @@ class TrainingStrategy(ABC):
             )
 
         else:
-            sampler = DistributedSampler(
-                dataset,
-                num_replicas=overwatch.world_size(),
-                rank=overwatch.rank(),
-                shuffle=True,
-                seed=seed,
-                drop_last=False,
-            )
+            if isinstance(dataset, list):
+                sampler = []
+                for dset in dataset:
+                    subset_sampler = DistributedSampler(
+                        dset,
+                        num_replicas=overwatch.world_size(),
+                        rank=overwatch.rank(),
+                        shuffle=True,
+                        seed=seed,
+                        drop_last=False,
+                    )
+                    sampler.append(subset_sampler)
+            else:
+                sampler = DistributedSampler(
+                    dataset,
+                    num_replicas=overwatch.world_size(),
+                    rank=overwatch.rank(),
+                    shuffle=True,
+                    seed=seed,
+                    drop_last=False,
+                )
             val_sampler = DistributedSampler(
                 val_dataset,
                 num_replicas=overwatch.world_size(),
@@ -158,14 +186,28 @@ class TrainingStrategy(ABC):
             )
 
         # Create a DataLoader with the initialized sampler, per-device-bsz, and collator
-        dataloader = DataLoader(
-            dataset,
-            batch_size=self.per_device_batch_size,
-            sampler=sampler,
-            collate_fn=collator,
-            num_workers=2,
-            worker_init_fn=self.worker_init_fn,
-        )
+        if isinstance(dataset, list):
+            dataloader = []
+            for dset,smplr in zip(dataset, sampler):
+                dloader = DataLoader(
+                    dset,
+                    batch_size=self.per_device_batch_size,
+                    sampler=smplr,
+                    collate_fn=collator,
+                    num_workers=2,
+                    worker_init_fn=self.worker_init_fn,
+                )
+                dataloader.append(dloader)
+
+        else:
+            dataloader = DataLoader(
+                dataset,
+                batch_size=self.per_device_batch_size,
+                sampler=sampler,
+                collate_fn=collator,
+                num_workers=2,
+                worker_init_fn=self.worker_init_fn,
+            )
 
         val_dataloader = DataLoader(
             val_dataset,
@@ -176,10 +218,13 @@ class TrainingStrategy(ABC):
             worker_init_fn=self.worker_init_fn,
         )
 
-        #val_dataloader.__len__ = lambda: 200
 
         # Max Steps vs. Epochs Computation
-        steps_per_epoch = len(dataloader) // self.grad_accumulation_steps
+        if isinstance(dataset, list):
+            len_dataloader = len(dataloader[0])
+        else:
+            len_dataloader = len(dataloader)
+        steps_per_epoch = len_dataloader // self.grad_accumulation_steps
         if self.max_steps is not None and steps_per_epoch < self.max_steps:
             # Just set `epochs` to some large number --> we'll short-circuit based on steps anyway
             self.epochs = 100
@@ -190,7 +235,7 @@ class TrainingStrategy(ABC):
         status = metrics.get_status()
         with tqdm(
             total=(
-                (self.epochs * (len(dataloader) // self.grad_accumulation_steps))
+                (self.epochs * (len_dataloader // self.grad_accumulation_steps))
                 if self.max_steps is None
                 else self.max_steps
             ),
@@ -200,14 +245,19 @@ class TrainingStrategy(ABC):
         ) as progress:
             for epoch in range(self.epochs):
                 self.vlm.train()
-                sampler.set_epoch(epoch)
+                if isinstance(dataset, list):
+                    sampler[epoch].set_epoch(epoch)
+                    dloader = dataloader[epoch]
+                else:
+                    sampler.set_epoch(epoch)
+                    dloader = dataloader
 
                 # Zero-Gradients (just in case)
                 self.optimizer.zero_grad()
 
                 # Note that we'll unpack batch (and let AMP/FSDP do its thing) in the VLM.forward() call
                 #   => Basically, if we're using mixed precision (or not), autocast()/FSDP will move to device!
-                for train_idx, batch in enumerate(dataloader):
+                for train_idx, batch in enumerate(dloader):
                     # [Contract] self.vlm.forward() must automatically compute `loss` and return!
                     with torch.autocast(
                         "cuda",
@@ -269,7 +319,6 @@ class TrainingStrategy(ABC):
                         progress.set_description(status)
 
                 # Do validation
-                # dist.barrier()
                 if val_dataset is not None:
                     self.vlm.eval()
                     val_losses = []
@@ -300,7 +349,7 @@ class TrainingStrategy(ABC):
                 # Save checkpoint at end of each epoch (if `self.max_steps` is None)
                 if self.max_steps is None: # and overwatch.is_rank_zero()
                     overwatch.info(f'Saving checkpoint.. epoch = {epoch+1}, loss = {loss.item()}')
-                    dist.barrier()  # to sync each process after model saving
+                    dist.barrier()  # to avoid timeout errors during model saving as per https://github.com/TRI-ML/prismatic-vlms/pull/38.
                     self.save_checkpoint(metrics.run_dir, metrics.global_step, epoch+1, loss.item())
 
             # at the end of all epochs.

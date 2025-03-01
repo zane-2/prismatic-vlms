@@ -15,7 +15,7 @@ utilities around different types of decoding/generation strategies.
 import warnings
 from abc import ABC, abstractmethod
 from functools import partial
-from typing import Callable, List, Optional, Type
+from typing import Callable, List, Optional, Type, Dict
 
 import torch
 import torch.nn as nn
@@ -106,9 +106,12 @@ class HFCausalLLMBackbone(LLMBackbone, ABC):
         inference_mode: bool = False,
         use_flash_attention_2: bool = False,
         torch_dtype: torch.dtype = torch.bfloat16,
+        rope_kwargs: Optional[Dict] = None,
         **kwargs,
     ) -> None:
         super().__init__(llm_backbone_id)
+        if rope_kwargs:
+            kwargs.update(rope_kwargs)
         self.llm_family = llm_family
         self.llm_max_length = llm_max_length
         self.inference_mode = inference_mode

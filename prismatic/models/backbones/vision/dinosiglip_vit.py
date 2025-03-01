@@ -27,6 +27,10 @@ DINOSigLIP_VISION_BACKBONES = {
         "dino": "vit_large_patch14_reg4_dinov2.lvd142m",
         "siglip": "vit_so400m_patch14_siglip_384",
     },
+    "video-dinosiglip-vit-so-384px": {
+        "dino": "vit_large_patch14_reg4_dinov2.lvd142m",
+        "siglip": "vit_so400m_patch14_siglip_384",
+    },
 }
 
 
@@ -161,3 +165,34 @@ class DinoSigLIPViTBackbone(VisionBackbone):
     @property
     def half_precision_dtype(self) -> torch.dtype:
         return torch.bfloat16
+
+
+
+
+class VideoDinoSigLIPViTBackbone(DinoSigLIPViTBackbone):
+    def __init__(self, vision_backbone_id: str, image_resize_strategy: str, default_image_size: int = 224, num_frames: int = 8) -> None:
+        super().__init__(vision_backbone_id, image_resize_strategy, default_image_size=default_image_size)
+        self.num_frames = num_frames
+    
+    def forward(self, pixel_values: Dict[str, torch.Tensor]) -> torch.Tensor:
+        dino_tensor = pixel_values["dino"]
+        siglip_tensor = pixel_values["siglip"]
+
+        # Reshape the input tensor to transform from (B, T, C, H, W) to (B * T, C, H, W)
+        assert dino_tensor.shape[1] == self.num_frames, f"Expected input tensor to have {self.num_frames} frames in the second dimension, but got {dino_tensor.shape[1]} frames instead.  Total shape was: {dino_tensor.shape}"
+        assert siglip_tensor.shape[1] == self.num_frames, f"Expected input tensor to have {self.num_frames} frames in the second dimension, but got {siglip_tensor.shape[1]} frames instead.  Total shape was: {siglip_tensor.shape}"
+        
+        dino_tensor = dino_tensor.view(-1, *dino_tensor.shape[2:])
+        siglip_tensor = siglip_tensor.view(-1, *siglip_tensor.shape[2:])
+        new_pixel_values = {
+            "dino": dino_tensor,
+            "siglip": siglip_tensor
+        }
+        
+        output_embeds = super().forward(new_pixel_values)
+        return output_embeds.reshape(-1, self.num_frames * self.dino_featurizer.patch_embed.num_patches, self.dino_featurizer.embed_dim + self.siglip_featurizer.embed_dim)
+    
+    @property
+    def num_patches(self) -> int:
+        assert self.dino_featurizer.patch_embed.num_patches == self.siglip_featurizer.patch_embed.num_patches
+        return self.dino_featurizer.patch_embed.num_patches * self.num_frames
