@@ -46,7 +46,7 @@ def get_model_description(model_id_or_name: str) -> str:
 
 # === Load Pretrained Model ===
 def load(
-    model_id_or_path: Union[str, Path], hf_token: Optional[str] = None, cache_dir: Optional[Union[str, Path]] = None
+    model_id_or_path: Union[str, Path], hf_token: Optional[str] = None, cache_dir: Optional[Union[str, Path]] = None, **kwargs
 ) -> PrismaticVLM:
     """Loads a pretrained PrismaticVLM from either local disk or the HuggingFace Hub."""
     if os.path.isdir(model_id_or_path):
@@ -120,6 +120,8 @@ def load(
 
     # Load Vision Backbone
     overwatch.info(f"Loading Vision Backbone [bold]{model_cfg['vision_backbone_id']}[/]")
+    if "num_frames" in kwargs:
+        model_cfg["num_frames"] = kwargs["num_frames"]
     vision_backbone, image_transform = get_vision_backbone_and_transform(
         model_cfg["vision_backbone_id"],
         model_cfg["image_resize_strategy"],
