@@ -542,14 +542,22 @@ class PrismaticVLM(VLM):
 
     @torch.inference_mode()
     def generate(self, image: Image, prompt_text: str, **kwargs: str) -> str:
-        #import pdb; pdb.set_trace()
         # For now, only support generation with a batch size of 1 for simplicity
         image_transform, tokenizer = self.vision_backbone.image_transform, self.llm_backbone.tokenizer
         # Prepare Inputs
         input_ids = tokenizer(prompt_text, truncation=True, return_tensors="pt").input_ids.to(self.device)
         if isinstance(image, list): # List of images (video frames)
             pixel_values = [image_transform(img) for img in image]
-            pixel_values = torch.stack(pixel_values, dim=0).to(self.device).unsqueeze(0) # stack and put to device of first tensor
+            if isinstance(pixel_values[0], torch.Tensor):
+                input_data = torch.stack(pixel_values, dim=0).to(self.device).unsqueeze(0) # stack and put to device of first tensor
+            elif isinstance(pixel_values[0], Dict):
+                keys = pixel_values[0].keys()
+                input_data = dict()
+                for k in keys:
+                    t = [el[k] for el in pixel_values]
+                    t = torch.stack(t, dim=0).to(self.device).unsqueeze(0)
+                    input_data[k] = t
+            pixel_values = input_data
         else: # Single image
             pixel_values = image_transform(image)
             if isinstance(pixel_values, torch.Tensor):
