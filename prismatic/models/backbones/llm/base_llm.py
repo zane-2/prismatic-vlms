@@ -111,6 +111,7 @@ class HFCausalLLMBackbone(LLMBackbone, ABC):
     ) -> None:
         super().__init__(llm_backbone_id)
         if rope_kwargs:
+            overwatch.info(f"using rope scaling factor of {rope_kwargs['rope_scaling']['factor']}", ctx_level=1)
             kwargs.update(rope_kwargs)
         self.llm_family = llm_family
         self.llm_max_length = llm_max_length

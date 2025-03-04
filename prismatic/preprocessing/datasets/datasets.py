@@ -158,7 +158,7 @@ class FinetuneDataset(Dataset[Dict[str, torch.Tensor]]):
         image_transform: ImageTransform,
         tokenizer: PreTrainedTokenizerBase,
         prompt_builder_fn: Type[PromptBuilder],
-        shuffle_frames: bool = True,
+        shuffle_frames: bool = False,
     ) -> None:
         super().__init__()
         self.instruct_json, self.image_dir = instruct_json, image_dir
@@ -269,19 +269,8 @@ class FinetuneDataset(Dataset[Dict[str, torch.Tensor]]):
             labels[0] = IGNORE_INDEX
 
             pixel_values = [self.image_transform(Image.open(self.image_dir / image_path).convert("RGB")) for image_path in image_paths]
-            #print("Saving images to debug in frames/")
-            #os.makedirs("frames", exist_ok=True)
-            #for i, image in enumerate(pixel_values):
-                # Convert image tensor to PIL image
-            #    image = image.permute(1, 2, 0).cpu().numpy()
-            #    image = (255 * (image - np.min(image)) / (np.max(image) - np.min(image))).astype(np.uint8)
-            #    image = Image.fromarray(image)
-            #    image.save(f"frames/{i}.png")
-
-            # stack the pixel values to change from list of [3, 224, 224] to [num_frames, 3, 224, 224]
             
-            # print(type(pixel_values), len(pixel_values), )
-            # print('dino shape:', pixel_values[0]['dino'].shape, 'siglip shape:', pixel_values[0]['siglip'].shape)
+            # stack the pixel values to change from list of [3, 224, 224] to [num_frames, 3, 224, 224]
             if isinstance(pixel_values[0], torch.Tensor):
                 input_data = torch.stack(pixel_values, dim=0).to(pixel_values[0].device) # stack and put to device of first tensor
             elif isinstance(pixel_values[0], Dict):
