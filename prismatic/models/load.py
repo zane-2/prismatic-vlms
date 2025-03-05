@@ -130,12 +130,21 @@ def load(
 
     # Load LLM Backbone --> note `inference_mode = True` by default when calling `load()`
     overwatch.info(f"Loading Pretrained LLM [bold]{model_cfg['llm_backbone_id']}[/] via HF Transformers")
+    rope_kwargs = None
+    if model_cfg.get("rope_scaling_factor", None):
+        rope_kwargs = {
+                "rope_scaling": {
+                    "type": "dynamic",
+                    "factor": model_cfg["rope_scaling_factor"]
+                }
+            }
+            
     llm_backbone, tokenizer = get_llm_backbone_and_tokenizer(
         model_cfg["llm_backbone_id"],
         llm_max_length=model_cfg.get("llm_max_length", 2048),
         hf_token=hf_token,
         inference_mode=True,
-        rope_kwargs=model_cfg.get("rope_kwargs", None)
+        rope_kwargs=rope_kwargs
     )
 
     # Load VLM using `from_pretrained` (clobbers HF syntax... eventually should reconcile)
