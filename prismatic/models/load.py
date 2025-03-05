@@ -135,6 +135,7 @@ def load(
         llm_max_length=model_cfg.get("llm_max_length", 2048),
         hf_token=hf_token,
         inference_mode=True,
+        rope_kwargs=model_cfg.get("rope_kwargs", None)
     )
 
     # Load VLM using `from_pretrained` (clobbers HF syntax... eventually should reconcile)
