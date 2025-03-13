@@ -125,7 +125,7 @@ def load(
     vision_backbone, image_transform = get_vision_backbone_and_transform(
         model_cfg["vision_backbone_id"],
         model_cfg["image_resize_strategy"],
-        model_cfg["num_frames"]
+        model_cfg.get("num_frames", None)
     )
 
     # Load LLM Backbone --> note `inference_mode = True` by default when calling `load()`
@@ -138,7 +138,7 @@ def load(
                     "factor": model_cfg["rope_scaling_factor"]
                 }
             }
-            
+
     llm_backbone, tokenizer = get_llm_backbone_and_tokenizer(
         model_cfg["llm_backbone_id"],
         llm_max_length=model_cfg.get("llm_max_length", 2048),

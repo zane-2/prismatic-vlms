@@ -361,14 +361,14 @@ if __name__=="__main__":
     ##### PREPARE METADATA FOR TRAINING ON CLUSTERED VIDEOS AND THEIR CAPTIONS
     # FRAMES_SAVE_PATH = "webvid_cluster_size=4_epoch1"
     
-    METADATA = "../clustering/clustering_metadata/webvid_val_5k_videos_per_cluster=16_total_input_frames=16.json"
+    METADATA = "../clustering/clustering_metadata/webvid_20k_videos_per_cluster=8_total_input_frames=16.json"
     with open(METADATA, "r") as fp:
         train_metadata = json.load(fp)
     
     TRAIN_EXAMPLES_SIZE = len(train_metadata) # 45912
-    VIDS_PER_CLUSTER = 16
+    VIDS_PER_CLUSTER = 8
     NUM_CLUSTERS = TRAIN_EXAMPLES_SIZE // VIDS_PER_CLUSTER
-    FRAMES_PER_VIDEO = 1
+    FRAMES_PER_VIDEO = 2
     # NUM_FRAMES = 4
 
     # VIDEO_ORIG_PATH = "/simurgh/u/zanedurante/webvid/webvid/videos/**/*.mp4"
@@ -417,7 +417,7 @@ if __name__=="__main__":
             ]
         })
     
-    JSON_SAVE_PATH = "dataset_splits/webvid_val_5k_videos_per_cluster=16_total_input_frames=16.json"
+    JSON_SAVE_PATH = f"dataset_splits/webvid_train_20k_videos_per_cluster={VIDS_PER_CLUSTER}_total_input_frames={VIDS_PER_CLUSTER*FRAMES_PER_VIDEO}.json"
     with open(JSON_SAVE_PATH, "w") as outfile:
         json.dump(training_samples, outfile, indent=2)
 

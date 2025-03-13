@@ -21,23 +21,23 @@
 #     finetune_epochs: int = 2
 
 # FSDP_CPU_RAM_EFFICIENT_LOADING=1 torchrun ...
-torchrun --standalone --nnodes 1 --nproc-per-node 4 scripts/pretrain.py \
-  --model.type "one-stage+7b" \
-  --model.model_id "webvid-train-45k-cluster-size=4-shuffle-false-epochs=2-frames=4-gpus=4-029+stage-finetune+x7" \
-  --model.image_resize_strategy "resize-naive" \
-  --model.llm_backbone_id "llama2-7b-pure" \
-  --model.vision_backbone_id "video-clip-vit-l-336px" \
-  --model.arch_specifier "no-align+gelu-mlp" \
-  --model.finetune_global_batch_size 4 \
-  --model.finetune_per_device_batch_size 1 \
-  --model.num_frames 4 \
-  --model.init_from_model "prism-clip+7b" \
-  --model.repo_id "TRI-ML/prismatic-vlms" \
-  --model.finetune_epochs 2 \
-  --dataset.type "webvid" \
-  --dataset.finetune_stage_components '["/vision/u/silsingh/prismatic-vlms/dataset_splits/webvid_train_45k_cluster_size=4.json", "/vision/u/silsingh/prismatic-vlms/webvid_num_frames=1"]' \
-  --val_dataset.type "webvid_val" \
-  --val_dataset.finetune_stage_components '["/vision/u/silsingh/prismatic-vlms/dataset_splits/webvid_val_5k_cluster_size=4.json", "/vision/u/silsingh/prismatic-vlms/webvid_num_frames=1"]' \
+# torchrun --standalone --nnodes 1 --nproc-per-node 4 scripts/pretrain.py \
+#   --model.type "one-stage+7b" \
+#   --model.model_id "webvid-train-45k-cluster-size=4-shuffle-false-epochs=2-frames=4-gpus=4-029+stage-finetune+x7" \
+#   --model.image_resize_strategy "resize-naive" \
+#   --model.llm_backbone_id "llama2-7b-pure" \
+#   --model.vision_backbone_id "video-clip-vit-l-336px" \
+#   --model.arch_specifier "no-align+gelu-mlp" \
+#   --model.finetune_global_batch_size 4 \
+#   --model.finetune_per_device_batch_size 1 \
+#   --model.num_frames 4 \
+#   --model.init_from_model "prism-clip+7b" \
+#   --model.repo_id "TRI-ML/prismatic-vlms" \
+#   --model.finetune_epochs 2 \
+#   --dataset.type "webvid" \
+#   --dataset.finetune_stage_components '["/vision/u/silsingh/prismatic-vlms/dataset_splits/webvid_train_45k_cluster_size=4.json", "/vision/u/silsingh/prismatic-vlms/webvid_num_frames=1"]' \
+#   --val_dataset.type "webvid_val" \
+#   --val_dataset.finetune_stage_components '["/vision/u/silsingh/prismatic-vlms/dataset_splits/webvid_val_5k_cluster_size=4.json", "/vision/u/silsingh/prismatic-vlms/webvid_num_frames=1"]' \
   
 
 # --dry_run True
@@ -46,20 +46,61 @@ torchrun --standalone --nnodes 1 --nproc-per-node 4 scripts/pretrain.py \
   
 
 # phi-3 models w/ dinosiglip-ViT
-# torchrun --standalone --nnodes 1 --nproc-per-node 4 scripts/pretrain.py \
+torchrun --standalone --nnodes 1 --nproc-per-node 1 scripts/pretrain.py \
+  --model.type "one-stage+7b" \
+  --model.model_id "testing-phi-zero-shot" \
+  --dataset.type "webvid" \
+  --model.image_resize_strategy "resize-naive" \
+  --model.llm_backbone_id "phi-3-instruct-4b" \
+  --model.vision_backbone_id "video-dinosiglip-vit-so-384px" \
+  --model.arch_specifier "no-align+gelu-mlp" \
+  --model.finetune_global_batch_size 1 \
+  --model.finetune_per_device_batch_size 1 \
+  --model.num_frames 4 \
+  --model.init_from_model "phi-instruct-3+4b+dinosiglip" \
+  --model.repo_id "RylanSchaeffer/prismatic-vlms" \
+  --model.finetune_epochs 5 \
+  --dry_run True
+
+
+# mistral + SigLIP
+# use_fast=False, /vision/u/silsingh/prismatic-vlms/prismatic/models/backbones/llm/base_llm.py in self.tokenizer = AutoTokenizer.from_pretrained(...) on line 167
+# "webvid-train-45k-cluster-size=4-mistral-siglip-epochs=5-frames=4-gpus=4-031"
+# torchrun --standalone --nnodes 1 --nproc-per-node 1 scripts/pretrain.py \
 #   --model.type "one-stage+7b" \
-#   --model.model_id "webvid-train-45k-cluster-size=4-phi-3-dinosiglip-epochs=5-frames=4-gpus=4-028" \
+#   --model.model_id "testing-mistral" \
 #   --dataset.type "webvid" \
-#   --model.image_resize_strategy "letterbox" \
-#   --model.llm_backbone_id "phi-3-instruct-4b" \
-#   --model.vision_backbone_id "video-dinosiglip-vit-so-384px" \
+#   --model.image_resize_strategy "resize-naive" \
+#   --model.llm_backbone_id "mistral-v0.2-7b-instruct" \
+#   --model.vision_backbone_id "video-siglip-vit-so400m-384px" \
 #   --model.arch_specifier "no-align+gelu-mlp" \
-#   --model.finetune_global_batch_size 4 \
+#   --model.finetune_global_batch_size 1 \
 #   --model.finetune_per_device_batch_size 1 \
 #   --model.num_frames 4 \
-#   --model.init_from_model "phi-instruct-3+4b+dinosiglip" \
+#   --model.init_from_model "mistral-instruct-v0.2+7b+siglip" \
 #   --model.repo_id "RylanSchaeffer/prismatic-vlms" \
 #   --model.finetune_epochs 5 \
+#   --dry_run True
+
+
+# gemma + SigLIP
+# torchrun --standalone --nnodes 1 --nproc-per-node 1 scripts/pretrain.py \
+#   --model.type "one-stage+7b" \
+#   --model.model_id "testing-gemma-8b" \
+#   --dataset.type "webvid" \
+#   --model.image_resize_strategy "resize-naive" \
+#   --model.llm_backbone_id "gemma-8b-instruct" \
+#   --model.vision_backbone_id "video-siglip-vit-so400m-384px" \
+#   --model.arch_specifier "no-align+gelu-mlp" \
+#   --model.finetune_global_batch_size 1 \
+#   --model.finetune_per_device_batch_size 1 \
+#   --model.num_frames 4 \
+#   --model.init_from_model "gemma-instruct+8b+siglip" \
+#   --model.repo_id "RylanSchaeffer/prismatic-vlms" \
+#   --model.finetune_epochs 5 \
+#   --dry_run True
+
+# "webvid-train-45k-cluster-size=4-gemma-8b-siglip-epochs=5-frames=4-gpus=4-030"
 
 
 ##" \

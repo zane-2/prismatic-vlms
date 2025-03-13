@@ -4,7 +4,7 @@ llama.py
 Class definition for all LLMs derived from LlamaForCausalLM.
 """
 
-from typing import Optional, Type
+from typing import Optional, Type, Dict
 
 import torch
 from torch import nn as nn
@@ -50,6 +50,7 @@ class GemmaLLMBackbone(HFCausalLLMBackbone):
         hf_token: Optional[str] = None,
         inference_mode: bool = False,
         use_flash_attention_2: bool = True,
+        rope_kwargs: Optional[Dict] = None
     ) -> None:
         super().__init__(
             llm_backbone_id,
@@ -57,6 +58,7 @@ class GemmaLLMBackbone(HFCausalLLMBackbone):
             hf_token=hf_token,
             inference_mode=inference_mode,
             use_flash_attention_2=use_flash_attention_2,
+            rope_kwargs=rope_kwargs,
             **GEMMA_MODELS[llm_backbone_id],
         )
 
