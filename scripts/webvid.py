@@ -164,72 +164,76 @@ if __name__=="__main__":
     
 
 
-    ##### CLUSTER VIDEOS RANDOMLY - 4 PER CLUSTER
-    # FRAMES_SAVE_PATH = "webvid_cluster_size=4_random"
+    ##### CLUSTER VIDEOS RANDOMLY - 8 PER CLUSTER
+    # FRAMES_SAVE_PATH = "webvid_num_frames=2" # dont need to save frames anymore!
     
-    # METADATA = "dataset_splits/webvid_train_45k.json"
-    # with open(METADATA, "r") as fp:
-    #     train_metadata = json.load(fp)
+    METADATA = "dataset_splits/webvid_train_45k.json"
+    with open(METADATA, "r") as fp:
+        train_metadata = json.load(fp)
     
-    # TRAIN_EXAMPLES_SIZE = len(train_metadata) # 45912, 5000
-    # VIDS_PER_CLUSTER = 4
-    # NUM_CLUSTERS = TRAIN_EXAMPLES_SIZE // VIDS_PER_CLUSTER
-    # NUM_FRAMES = 4
+    TRAIN_EXAMPLES_SIZE = len(train_metadata) # 45912, 5000
+    VIDS_PER_CLUSTER = 8
+    NUM_CLUSTERS = TRAIN_EXAMPLES_SIZE // VIDS_PER_CLUSTER
+    FRAMES_PER_VIDEO = 2
 
-    # train_video_indices = list(range(TRAIN_EXAMPLES_SIZE))  # [0, 1, ... N-1]
-    # random.shuffle(train_video_indices)  # shuffle([0, 1, ... N-1])
+    train_video_indices = list(range(TRAIN_EXAMPLES_SIZE))  # [0, 1, ... N-1]
+    random.shuffle(train_video_indices)  # shuffle([0, 1, ... N-1])
 
     # VIDEO_ORIG_PATH = "/simurgh/u/zanedurante/webvid/webvid/videos/**/*.mp4"
     # orig_video_files = glob.glob(VIDEO_ORIG_PATH, recursive=True)
 
-    # training_samples = []
-    # for cluster_idx in tqdm(range(NUM_CLUSTERS)):
-    #     videos_in_cluster = train_video_indices[cluster_idx*VIDS_PER_CLUSTER: (cluster_idx+1)*VIDS_PER_CLUSTER]  # chunk of 4
-    #     # videos_in_cluster = list(filter(lambda x: x["cluster"] == str(cluster_idx), train_metadata))
-    #     # assert len(videos_in_cluster) == VIDS_PER_CLUSTER, f"more videos in cluster than anticipated! {videos_in_cluster}"
+    training_samples = []
+    for cluster_idx in tqdm(range(NUM_CLUSTERS)):
+        videos_in_cluster = train_video_indices[cluster_idx*VIDS_PER_CLUSTER: (cluster_idx+1)*VIDS_PER_CLUSTER]  # chunk of VIDS_PER_CLUSTER
+        # videos_in_cluster = list(filter(lambda x: x["cluster"] == str(cluster_idx), train_metadata))
+        # assert len(videos_in_cluster) == VIDS_PER_CLUSTER, f"more videos in cluster than anticipated! {videos_in_cluster}"
 
-    #     frame_paths = []
-    #     combined_video_ids = ""
-    #     joined_caption = ""
-    #     for video_idx in videos_in_cluster:
-    #         video = train_metadata[video_idx]
-    #         video_id = video["id"]
-    #         combined_video_ids += video_id+", "
-    #         caption = video["conversations"][-1]["value"]
-    #         joined_caption += caption+". "
+        frame_paths = []
+        combined_video_ids = ""
+        joined_caption = ""
+        for video_idx in videos_in_cluster:
+            video = train_metadata[video_idx]
+            video_id = video["id"]
+            combined_video_ids += video_id+", "
+            caption = video["conversations"][-1]["value"]
+            joined_caption += caption+". "
 
-    #         orig_video_path = list(filter(lambda x: x.endswith(f"{video_id}.mp4"), orig_video_files))[0] # ideally just 1 video matching this ID
-    #         frames = sample_frames_from_video_path(orig_video_path, NUM_FRAMES//VIDS_PER_CLUSTER)
+            for i in range(FRAMES_PER_VIDEO):
+                frame_paths.append(f"{video_id}/{str(i).zfill(4)}.png")
 
-    #         for fr in range(frames.shape[0]):
-    #             np_frame = frames[fr].numpy().astype(np.uint8)
-    #             pil_frame = Image.fromarray(np_frame)
-    #             frame_path = os.path.join(video_id, f"{str(fr).zfill(4)}.png")
-    #             os.makedirs(os.path.join(FRAMES_SAVE_PATH, video_id), exist_ok=True)
-    #             pil_frame.save(os.path.join(FRAMES_SAVE_PATH, frame_path))
-    #             frame_paths.append(frame_path)
+            # orig_video_path = list(filter(lambda x: x.endswith(f"{video_id}.mp4"), orig_video_files))[0] # ideally just 1 video matching this ID
+            # frames = sample_frames_from_video_path(orig_video_path, NUM_FRAMES//VIDS_PER_CLUSTER)
 
-        
-    #     training_samples.append({
-    #         "id": combined_video_ids.strip(),
-    #         "frames": frame_paths,
-    #         "conversations": [
-    #             {
-    #                 "from": "human",
-    #                 "value": "<image>\nDescribe what is happening in the video."
-    #             },
-    #             {
-    #                 "from": "gpt",
-    #                 "value": joined_caption.strip()
-    #             }
-    #         ]
-    #     })
+            # for fr in range(frames.shape[0]):
+            #     np_frame = frames[fr].numpy().astype(np.uint8)
+            #     pil_frame = Image.fromarray(np_frame)
+            #     frame_path = os.path.join(video_id, f"{str(fr).zfill(4)}.png")
+            #     os.makedirs(os.path.join(FRAMES_SAVE_PATH, video_id), exist_ok=True)
+            #     pil_frame.save(os.path.join(FRAMES_SAVE_PATH, frame_path))
+            #     frame_paths.append(frame_path)
+
+        assert len(frame_paths) == FRAMES_PER_VIDEO * VIDS_PER_CLUSTER, f"frame paths should have length {FRAMES_PER_VIDEO * VIDS_PER_CLUSTER}, but has length {len(frame_paths)}!"
+        training_samples.append({
+            "id": combined_video_ids.strip(),
+            "frames": frame_paths,
+            "conversations": [
+                {
+                    "from": "human",
+                    "value": "<image>\nDescribe what is happening in the video."
+                },
+                {
+                    "from": "gpt",
+                    "value": joined_caption.strip()
+                }
+            ]
+        })
     
-    # JSON_SAVE_PATH = "dataset_splits/webvid_train_45k_cluster_size=4_random.json"
-    # with open(JSON_SAVE_PATH, "w") as outfile:
-    #     json.dump(training_samples, outfile, indent=2)
+    JSON_SAVE_PATH = "dataset_splits/webvid_train_45k_videos_per_cluster=8_total_input_frames=16_random.json"
+    with open(JSON_SAVE_PATH, "w") as outfile:
+        json.dump(training_samples, outfile, indent=2)
 
-
+    print('done...')
+    exit()
 
 
 
@@ -361,7 +365,7 @@ if __name__=="__main__":
     ##### PREPARE METADATA FOR TRAINING ON CLUSTERED VIDEOS AND THEIR CAPTIONS
     # FRAMES_SAVE_PATH = "webvid_cluster_size=4_epoch1"
     
-    METADATA = "../clustering/clustering_metadata/webvid_20k_videos_per_cluster=8_total_input_frames=16.json"
+    METADATA = "../clustering/clustering_metadata/webvid_80k_videos_per_cluster=8_total_input_frames=16.json"
     with open(METADATA, "r") as fp:
         train_metadata = json.load(fp)
     
@@ -417,7 +421,7 @@ if __name__=="__main__":
             ]
         })
     
-    JSON_SAVE_PATH = f"dataset_splits/webvid_train_20k_videos_per_cluster={VIDS_PER_CLUSTER}_total_input_frames={VIDS_PER_CLUSTER*FRAMES_PER_VIDEO}.json"
+    JSON_SAVE_PATH = f"dataset_splits/webvid_train_80k_videos_per_cluster={VIDS_PER_CLUSTER}_total_input_frames={VIDS_PER_CLUSTER*FRAMES_PER_VIDEO}.json"
     with open(JSON_SAVE_PATH, "w") as outfile:
         json.dump(training_samples, outfile, indent=2)
 
