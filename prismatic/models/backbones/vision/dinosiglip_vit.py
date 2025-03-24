@@ -45,7 +45,7 @@ class DinoSigLIPImageTransform:
 
 
 class DinoSigLIPViTBackbone(VisionBackbone):
-    def __init__(self, vision_backbone_id: str, image_resize_strategy: str, default_image_size: int = 224) -> None:
+    def __init__(self, vision_backbone_id: str, image_resize_strategy: str, default_image_size: int = 224, num_frames: int = 1) -> None:
         super().__init__(vision_backbone_id, image_resize_strategy, default_image_size=default_image_size)
         self.dino_timm_path_or_url = DINOSigLIP_VISION_BACKBONES[vision_backbone_id]["dino"]
         self.siglip_timm_path_or_url = DINOSigLIP_VISION_BACKBONES[vision_backbone_id]["siglip"]

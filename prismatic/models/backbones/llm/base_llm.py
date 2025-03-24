@@ -164,12 +164,21 @@ class HFCausalLLMBackbone(LLMBackbone, ABC):
 
         # Load (Fast) Tokenizer
         overwatch.info(f"Loading [bold]{llm_family}[/] (Fast) Tokenizer via the AutoTokenizer API", ctx_level=1)
+        # try:  # try loading the fast tokenizer
         self.tokenizer = AutoTokenizer.from_pretrained(
             hf_hub_path,
             model_max_length=self.llm_max_length,
             token=hf_token,
-            padding_side="right",
+            padding_side="right"
         )
+        # except Exception as e:  # if tokenizer not found, try loading the "not-fast" version (esp. for Mistral LLM backbone)
+        #     self.tokenizer = AutoTokenizer.from_pretrained(
+        #         hf_hub_path,
+        #         model_max_length=self.llm_max_length,
+        #         token=hf_token,
+        #         padding_side="right",
+        #         use_fast=False
+        #     )
 
         # Explicitly verify that Tokenizer padding_side is set to right for training!
         assert self.tokenizer.padding_side == "right", "Tokenizer `padding_side` is not set to `right`!"

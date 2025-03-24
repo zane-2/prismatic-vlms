@@ -288,7 +288,7 @@ def eval_finetuned_prismatic_models_nextoe():
 
 def eval_finetuned_prismatic_models_nextoe_faster():
     cfg = GenerateConfig()
-    cfg.model_path = 'runs/webvid+webvid-train-45k-cluster-size=4-phi-3-dinosiglip-epochs=5-frames=4-gpus=4-028+stage-finetune+x7/checkpoints/step-014350-epoch-05-loss=4.2467.pt'
+    cfg.model_path = 'runs/webvid+webvid-train-45k-cluster-size=4-mistral-siglip-epochs=5-frames=4-gpus=4-031+stage-finetune+x7/checkpoints/step-014350-epoch-05-loss=4.2106.pt'
     
     vlm = set_up_prismatic_vlm(cfg)
     
@@ -337,7 +337,7 @@ def eval_finetuned_prismatic_models_nextoe_faster():
                 vlm_answers[video_id][qid] = generated_text
 
 
-    SAVE_PATH = f"../NExT-OE/results/webvid-train-45k-cluster-size=4-phi-3-dinosiglip-frames=4-028-epoch=5.json"
+    SAVE_PATH = f"../NExT-OE/results/webvid-train-45k-cluster-size=4-mistral-siglip-frames=4-031-epoch=5.json"
     with open(SAVE_PATH, 'w') as outfile:
         json.dump(vlm_answers, outfile, indent=2)
 
@@ -476,9 +476,13 @@ if __name__ == "__main__":
     ### PRECOMPUTE N FRAMES FOR EACH NEXT-QA VIDEO
     # precompute_N_frames_NExT_OE()
 
+    ########## ZERO-SHOT EVAL  #########
+    evaluate_zero_shot('prism-mistral-instruct-v0.2+7b+siglip')
+
     ########## EVALUATION OF FINETUNED MODELS #############
+    
     # eval_finetuned_prismatic_models_nextoe()
-    eval_finetuned_prismatic_models_nextoe_faster()
+    # eval_finetuned_prismatic_models_nextoe_faster()
 
     # model_path = "runs/webvid+prism-clip+7b-webvid-train-45k-frames=4-gpus=4-epochs=2-001+stage-finetune+x7/checkpoints/step-022956-epoch-01-loss=2.0254.pt" # "webvid+prism-clip+7b-webvid-train-45k-diff-prompts-frames=4-gpus=4-epochs=2-002+stage-finetune+x7/checkpoints/step-022956-epoch-01-loss=2.1013.pt"
     # webvid_val_path = "webvid_val_5k_diff_prompts.json"

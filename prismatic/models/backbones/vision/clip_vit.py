@@ -23,7 +23,7 @@ CLIP_VISION_BACKBONES = {
 #                         a decent approximation, the resulting features are *worse*; this was a super tricky bug
 #                         to identify, but luckily there's an easy fix (`override_act_layer`)
 class CLIPViTBackbone(TimmViTBackbone):
-    def __init__(self, vision_backbone_id: str, image_resize_strategy: str, default_image_size: int = 224) -> None:
+    def __init__(self, vision_backbone_id: str, image_resize_strategy: str, default_image_size: int = 224, num_frames: int = 1) -> None:
         super().__init__(
             vision_backbone_id,
             CLIP_VISION_BACKBONES[vision_backbone_id],

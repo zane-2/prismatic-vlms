@@ -138,7 +138,7 @@ class PretrainConfig:
             self.rope_kwargs = {
                     "rope_scaling": {
                         "type": "dynamic",
-                        "factor": self.model.rope_scaling_factor
+                    "factor": self.model.rope_scaling_factor
                     }
                 }
 
@@ -232,7 +232,7 @@ def pretrain(cfg: PretrainConfig) -> None:
         prompt_text = "Input: What is going on in the image?\nOutput: "  # Input: <prompt>\nOutput:
         image = image + image
         generated_text = vlm.generate(
-                            image,
+                            image[:4],
                             prompt_text,
                             do_sample=False,
                             temperature=1.0,

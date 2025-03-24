@@ -27,6 +27,7 @@ from prismatic.models.backbones.vision import (
     IN1KViTBackbone,
     SigLIPViTBackbone,
     VisionBackbone,
+    VideoSigLIPViTBackbone
 )
 from prismatic.models.vlms import PrismaticVLM
 
@@ -60,7 +61,9 @@ VISION_BACKBONES = {
     "video-clip-vit-b": {"cls": VideoCLIPViTBackbone, "kwargs": {"default_image_size": 224, "num_frames": 8}},
     "video-clip-vit-l": {"cls": VideoCLIPViTBackbone, "kwargs": {"default_image_size": 224, "num_frames": 8}},
     "video-clip-vit-l-336px": {"cls": VideoCLIPViTBackbone, "kwargs": {"default_image_size": 336, "num_frames": 8}},
-    "video-dinosiglip-vit-so-384px": {"cls": VideoDinoSigLIPViTBackbone, "kwargs": {"default_image_size": 224, "num_frames": 8}}
+    "video-dinosiglip-vit-so-384px": {"cls": VideoDinoSigLIPViTBackbone, "kwargs": {"default_image_size": 384, "num_frames": 8}},
+    "video-siglip-vit-so400m-384px": {"cls": VideoSigLIPViTBackbone, "kwargs": {"default_image_size": 384, "num_frames": 8}}
+
 }
 
 
@@ -106,6 +109,7 @@ def get_vision_backbone_and_transform(
     if vision_backbone_id in VISION_BACKBONES:
         vision_cfg = VISION_BACKBONES[vision_backbone_id]
         vision_cfg["kwargs"]["num_frames"] = num_frames
+        # import pdb; pdb.set_trace()
         vision_backbone: VisionBackbone = vision_cfg["cls"](
             vision_backbone_id, image_resize_strategy, **vision_cfg["kwargs"]
         )
